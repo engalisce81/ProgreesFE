@@ -1,0 +1,102 @@
+<div class="list-container">
+
+  @if (showFormModal) {
+  <div class="modal-overlay">
+    <div class="form-card">
+      <h3>{{ isEditMode ? 'Edit Grade Level' : 'Create New Grade Level' }}</h3>
+
+      <form [formGroup]="gradeLevelForm" (ngSubmit)="submitForm()">
+        <div class="form-group">
+          <label>Grade Level Name *</label>
+          <input type="text" formControlName="name" class="form-control" placeholder="e.g. First Year, Level 1...">
+          @if (gradeLevelForm.get('name')?.invalid && gradeLevelForm.get('name')?.touched) {
+          <small class="text-danger">Name is required</small>
+          }
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeFormModal()">Cancel</button>
+          <button type="submit" class="btn-confirm" [disabled]="gradeLevelForm.invalid || loading">
+            {{ loading ? 'Saving...' : (isEditMode ? 'Update' : 'Create') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  @if (showDeleteConfirm) {
+  <div class="modal-overlay">
+    <div class="delete-card">
+      <i class="bi bi-exclamation-triangle text-warning"
+        style="font-size: 3rem; display: block; text-align: center; margin-bottom: 15px;"></i>
+      <h3 style="text-align: center;">Delete Grade Level?</h3>
+      <p style="text-align: center; color: var(--muted); margin-bottom: 25px;">
+        Are you sure you want to delete <strong>{{ gradeLevelToDelete?.name }}</strong>?
+      </p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelDelete()">No, Keep it</button>
+        <button class="btn-confirm" style="background: #dc3545;" (click)="deleteGradeLevel()">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" [(ngModel)]="search" (input)="onSearchChange()" placeholder="Search grade levels..."
+        class="search-input-modern" />
+    </div>
+    @if (hasCreatePermission) {
+    <button (click)="openCreateModal()" class="btn-create-modern">
+      <i class="bi bi-plus-lg"></i> <span>Add New Level</span>
+    </button>
+    }
+  </div>
+
+
+
+  <div class="cards-grid">
+    @for (level of gradeLevels; track level.id) {
+    <div class="course-card">
+      <div class="card-header">
+        <div class="chapter-icon-placeholder"><i class="bi bi-layers-half"></i></div>
+        <div class="dropdown-actions">
+          <button class="dots-btn" (click)="$event.stopPropagation(); level['showMenu'] = !level['showMenu']">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          @if (level['showMenu']) {
+          <div class="actions-menu" (mouseleave)="level['showMenu'] = false">
+            <button class="btn-subjects" [routerLink]="[level.id, 'subjects']">
+              <i class="bi bi-book-half"></i> Subjects
+            </button>
+            @if (hasEditPermission) {
+            <button class="btn-edit" (click)="openEditModal(level)">
+              <i class="bi bi-pencil-square"></i> Edit
+            </button>
+            }
+            @if(hasDeletePermission){
+            <button class="btn-delete text-danger" (click)="confirmDelete(level)">
+              <i class="bi bi-trash3-fill"></i> Delete
+            </button>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      <div class="card-body">
+        <h3 class="course-name">{{ level.name }}</h3>
+        <p class="course-title">{{ level.collegeName || 'Grade Level' }}</p>
+      </div>
+    </div>
+    }
+  </div>
+
+  @if (gradeLevels.length === 0 && !loading) {
+  <div class="empty-state" style="text-align: center; padding: 100px; color: var(--muted);">
+    <i class="bi bi-folder-x" style="font-size: 4rem;"></i>
+    <p>No grade levels found for this college.</p>
+  </div>
+  }
+</div>

@@ -1,0 +1,116 @@
+@if (isLoading) {
+
+} @else {
+<div class="student-degree-container">
+
+  <div class="exam-summary-card" [class.passed]="result.isPassed" [class.failed]="!result.isPassed">
+    <div class="summary-info">
+      <h1><i class="bi bi-journal-text"></i> {{ result.examTitle }}</h1>
+      <p class="finish-date"><i class="bi bi-calendar-event"></i> Finished At: {{ result.finishedAt | date:'medium' }}
+      </p>
+      <div class="score-details-mini mt-2" style="gap: 20; display: flex;">
+        <span class="btn btn-secondary">
+          <i class="bi bi-trophy"></i> Pass Score: {{ result.passScore }}
+        </span>
+        <span class="btn btn-secondary">
+          <i class="bi bi-flag"></i> Total Exam Score: {{ result.examScore }}
+        </span>
+      </div>
+    </div>
+
+    <div class="score-badge" style="gap: 20; display: flex; margin-top: 10px; margin-bottom: 10px;">
+      <span class="btn btn-secondary">Total Score</span>
+      <span class="btn btn-secondary">{{ result.studentScore }}%</span>
+      <span class="btn btn-secondary">{{ result.isPassed ? 'PASSED' : 'FAILED' }}</span>
+    </div>
+  </div>
+
+  <div class="question-list">
+    @for (q of result.answers; track q.questionId) {
+    <div class="question-card" [class.wrong-border]="!q.isCorrect" [class.correct-border]="q.isCorrect">
+
+      <div class="question-header">
+        <div class="question-title-area">
+          @if (q.logoUrl) {
+          <div class="question-image-container mb-3">
+            <img [src]="q.logoUrl" alt="Question Image" class="img-fluid rounded shadow-sm border"
+              style="max-height: 300px; object-fit: contain;">
+          </div>
+          }
+          <strong><i class="bi bi-patch-question"></i> {{ q.questionText }}</strong>
+          <div class="badges">
+            <span class="type">Type: {{ q.questionType }}</span>
+            <span class="score" [class.text-danger]="!q.isCorrect">
+              Student Points: {{ q.scoreObtained }}
+            </span>
+            <span class="score" [class.text-danger]="!q.isCorrect">
+              Points: {{ q.scoreTotal }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      @if (q.allOptions && q.allOptions.length > 0) {
+      <ul class="answers">
+        @for (opt of q.allOptions; track opt.id) {
+        <li [ngClass]="{
+              'correct-ans': opt.isCorrect, 
+              'student-selected': opt.id === q.studentSelectedAnswerId,
+              'wrong-selection': opt.id === q.studentSelectedAnswerId && !opt.isCorrect
+            }">
+
+          <div class="ans-content">
+            @if (opt.id === q.studentSelectedAnswerId) {
+            <i class="bi" [ngClass]="opt.isCorrect ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+            } @else if (opt.isCorrect) {
+            <i class="bi bi-check-circle"></i>
+            } @else {
+            <i class="bi bi-circle"></i>
+            }
+            <span>{{ opt.answerText }}</span>
+          </div>
+
+          <div class="ans-labels">
+            @if (opt.isCorrect) { <span class="badge bg-success">Correct Answer</span> }
+            @if (opt.id === q.studentSelectedAnswerId) { <span class="badge bg-primary">Student Choice</span> }
+          </div>
+        </li>
+        }
+      </ul>
+      }
+
+      @if (q.studentTextAnswer || q.correctTextAnswer) {
+      <div class="text-answer-compare">
+        <div class="answer-box student">
+          <label><i class="bi bi-person"></i> Student's Answer:</label>
+          <p>{{ q.studentTextAnswer || 'No answer provided' }}</p>
+        </div>
+
+        @if (q.correctTextAnswer) {
+        <div class="answer-box model">
+          <label><i class="bi bi-check2-all"></i> Model Answer:</label>
+          <p>{{ q.correctTextAnswer }}</p>
+        </div>
+        }
+
+        <div class="feedback-footer">
+          @if (q.isCorrect) {
+          <span class="text-success"><i class="bi bi-check-circle"></i> Full Marks</span>
+          } @else {
+          <span class="text-danger"><i class="bi bi-x-circle"></i> Incorrect</span>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  @if (result.answers.length === 0) {
+  <div class="no-data">
+    <i class="bi bi-exclamation-circle"></i>
+    <p>No answer details available for this exam result.</p>
+  </div>
+  }
+</div>
+}

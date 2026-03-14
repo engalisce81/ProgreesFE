@@ -1,0 +1,72 @@
+<div class="admin-container">
+  <div class="header">
+    <div class="header-content">
+      <h2><i class="bi bi-patch-check"></i> Certificate Template Setup</h2>
+      <p>Click on the certificate to set name position</p>
+      @if (existingConfig()) {
+        <div class="status-badge">
+          <i class="bi bi-check-circle"></i> Template Already Configured
+        </div>
+      }
+    </div>
+    
+    <div class="actions">
+      <input type="file" 
+             (change)="loadPdf($event)" 
+             accept="application/pdf" 
+             id="pdfFile" 
+             hidden
+             #fileInput>
+      
+      <button (click)="fileInput.click()" class="btn-upload">
+        <i class="bi bi-file-earmark-pdf"></i> 
+        {{ existingConfig() ? 'Change Template' : 'Upload Template' }}
+      </button>
+      
+      @if (showMarker()) {
+        <button (click)="saveConfig()" 
+                class="btn-save"
+                [disabled]="isLoading()">
+          <i class="bi bi-cloud-check"></i> 
+          {{ existingConfig() ? 'Update Settings' : 'Save Settings' }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="canvas-container" [class.empty]="!pdfLoaded() && !isLoading()">
+    @if (isLoading()) {
+      <div class="loader-overlay">
+        <p>Loading PDF Template...</p>
+      </div>
+    }
+
+    <div class="render-area" 
+         (click)="selectPosition($event)" 
+         [hidden]="!pdfLoaded()">
+      
+      <canvas #pdfCanvas></canvas>
+
+      @if (showMarker()) {
+        <div 
+          class="name-overlay"
+          [style.left.%]="namePosition().x"
+          [style.top.%]="namePosition().y">
+          <div class="name-text">{{ exampleName() }}</div>
+          <div class="anchor-point"></div>
+        </div>
+        
+        <div class="position-info">
+          <span>Position: X={{ namePosition().x }}%, Y={{ namePosition().y }}%</span>
+        </div>
+      }
+    </div>
+
+    @if (!pdfLoaded() && !isLoading()) {
+      <div class="placeholder-msg">
+        <i class="bi bi-upload"></i>
+        <p>{{ existingConfig() ? 'Loading existing template...' : 'No template found. Please upload a PDF file.' }}</p>
+      </div>
+    }
+  </div>
+</div>

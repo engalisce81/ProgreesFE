@@ -1,0 +1,101 @@
+<div class="modal-overlay">
+  <div class="login-wrapper" style="max-width: 600px; width: 100%;">
+    
+    <div class="login-logo-container">
+      <img src="https://i.postimg.cc/1RvZJShw/Whats-App-Image-2025-09-13-at-21-54-29-e593bcc7.jpg" alt="Logo">
+    </div>
+
+    <div class="form-card">
+      <h3>Create Account</h3>
+      <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">
+        Join us today! Please fill in your information.
+      </p>
+
+      @if (loading) {
+        <div class="global-loader" style="position: relative; padding: 40px 0;">
+          <div class="spinner"></div>
+          <p>Creating your account...</p>
+        </div>
+      }
+
+      @if (!loading) {
+        <form (ngSubmit)="register()" #regForm="ngForm">
+          
+          <div class="row-grid">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" [(ngModel)]="registerDto.fullName" name="fullName" required class="form-control" placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" [(ngModel)]="registerDto.userName" name="userName" required class="form-control" placeholder="name@example.com">
+            </div>
+          </div>
+
+          <div class="row-grid">
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" [(ngModel)]="registerDto.phoneNumber" name="phoneNumber" required class="form-control" placeholder="0100xxxxxxx">
+            </div>
+
+            <div class="form-group" style="position: relative;">
+              <label>Password</label>
+              <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="registerDto.password" name="password" required class="form-control" placeholder="••••••••">
+              <i class="bi toggle-password-icon" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'" (click)="togglePassword()" style="top: 38px;"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Gender</label>
+            <select [(ngModel)]="registerDto.gender" name="gender" required class="form-control">
+              <option value="" disabled selected>Select Gender</option>
+              <option [ngValue]="true">Male</option>
+              <option [ngValue]="false">Female</option>
+            </select>
+          </div>
+
+          <div class="row-grid">
+            <div class="form-group">
+              <label>University</label>
+              <select [(ngModel)]="registerDto.universityId" name="universityId" (change)="onUniversityChange(registerDto.universityId)" required class="form-control">
+                <option value="">-- Select University --</option>
+                @for (uni of universities; track uni.id) {
+                  <option [value]="uni.id">{{ uni.name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>College</label>
+              <select [(ngModel)]="registerDto.collegeId" name="collegeId" required class="form-control">
+                <option value="">-- Select College --</option>
+                @for (col of colleges; track col.id) {
+                  <option [value]="col.id">{{ col.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button type="submit" [disabled]="regForm.invalid" class="btn-confirm" style="width: 100%; justify-content: center; padding: 14px;">
+              Register Now
+            </button>
+          </div>
+        </form>
+      }
+
+      @if (errorMessage) {
+        <div style="margin-top: 15px; color: #ef4444; text-align: center; font-size: 0.9rem; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px;">
+          <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
+        </div>
+      }
+
+      <div style="text-align: center; margin-top: 20px; font-size: 0.9rem;">
+        <p style="color: var(--muted);">Already have an account?
+          <a [routerLink]="['/account']" style="color: var(--purple-600); font-weight: 600; text-decoration: none;"> Login here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

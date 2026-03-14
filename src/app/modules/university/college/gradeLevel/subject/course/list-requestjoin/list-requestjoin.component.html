@@ -1,0 +1,100 @@
+<div class="list-container">
+
+  @if (showDeleteConfirm) {
+  <div class="modal-overlay">
+    <div class="delete-card">
+      <i class="bi bi-x-circle-fill warning-icon"></i>
+      <h3>Reject Request?</h3>
+      <p>Are you sure you want to reject <strong>{{ requestToDelete?.name }}</strong>? This will delete their join
+        request.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="showDeleteConfirm = false">Close</button>
+        <button class="btn-confirm-delete" (click)="executeDelete()">Confirm Reject</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="toolbar" [class.dimmed]="showDeleteConfirm">
+    <div class="search-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" [(ngModel)]="search" (input)="pageNumber=1; loadStudents()"
+        placeholder="Search join requests..." class="search-input-modern" />
+    </div>
+  </div>
+
+
+  @if (!loading) {
+  <div class="cards-grid" [class.dimmed]="showDeleteConfirm">
+    @for (student of students; track student.userId) {
+    <div class="course-card">
+      <div class="card-header">
+        <div class="lecture-icon-box" style="color: var(--purple-600);">
+          <i class="bi bi-person-plus-fill"></i>
+        </div>
+
+        <div class="dropdown-actions">
+          <button class="dots-btn" (click)="$event.stopPropagation(); student.showMenu = !student.showMenu">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          @if (student.showMenu) {
+          <div class="actions-menu" (mouseleave)="student.showMenu = false">
+            <button class="text-danger" (click)="confirmReject(student)">
+              <i class="bi bi-trash3"></i> Delete Request
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="badge-group">
+          <span class="custom-badge bg-warning text-dark">Pending Request</span>
+        </div>
+
+        <h3 class="course-name">{{ student.name }}</h3>
+        <p class="course-title"><i class="bi bi-envelope"></i> {{ student.email }}</p>
+
+        <div class="details-grid">
+          <div class="detail-item"><i class="bi bi-calendar-event"></i> {{ student.creationTime | date:'short' }}</div>
+          <div class="detail-item"><i class="bi bi-phone"></i> {{ student.phoneNumber || 'N/A' }}</div>
+        </div>
+
+        <div class="footer-actions-group" style="display: flex; gap: 10px; margin-top: 20px;">
+          <button (click)="approveStudent(student)" class="btn-action-primary" [disabled]="student.processing"
+            style="flex: 2; border: none;">
+            <i class="bi bi-check-lg"></i> {{ student.processing ? 'Approving...' : 'Approve' }}
+          </button>
+
+          <button (click)="confirmReject(student)" class="btn-cancel"
+            style="flex: 1; padding: 12px; border-radius: 12px; border: none;">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  @if (students.length === 0) {
+  <div class="no-data" style="text-align: center; padding: 60px;">
+    <i class="bi bi-clipboard-check" style="font-size: 4rem; color: var(--muted); opacity: 0.5;"></i>
+    <p>No pending join requests found.</p>
+  </div>
+  }
+
+  @if (totalCount > pageSize) {
+  <div class="pagination-modern">
+    <button class="page-nav" [disabled]="pageNumber === 1" (click)="onPageChange(pageNumber - 1)">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    @for (p of pages; track p) {
+    <button class="page-num" [class.active]="p === pageNumber" (click)="onPageChange(p)">{{ p }}</button>
+    }
+    <button class="page-nav" [disabled]="pageNumber === totalPages" (click)="onPageChange(pageNumber + 1)">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+  }
+  }
+</div>

@@ -1,0 +1,77 @@
+<div class="feedback-container">
+  
+  <div class="page-header">
+    <div class="tabs-header">
+      <button class="tab-btn" [class.active]="isAcceptTab" (click)="switchTab(true)">
+        <i class="fas fa-check-double"></i> <span>Active Feedbacks</span>
+      </button>
+      <button class="tab-btn" [class.active]="!isAcceptTab" (click)="switchTab(false)">
+        <i class="fas fa-hourglass-half"></i> <span>Pending Review</span>
+      </button>
+    </div>
+  </div>
+
+
+
+  @if (!loading) {
+    <div class="feedback-grid">
+      @for (item of feedbacks; track item.id) {
+        <div class="custom-feedback-card">
+          <div class="card-glow"></div>
+          
+          <div class="user-profile">
+            <div class="avatar-wrapper">
+              <img [src]="item.logoUrl || 'assets/default-avatar.png'" alt="User">
+              <div class="status-indicator" [style.background]="isAcceptTab ? 'var(--success)' : 'var(--warning)'"></div>
+            </div>
+            <div class="user-info">
+              <h3>{{ item.userName }}</h3>
+              <div class="stars">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <i class="fa-star" [class.fas]="star <= item.rating" [class.far]="star > item.rating"></i>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="card-content">
+            <i class="fas fa-quote-left quote-icon"></i>
+            <p>{{ item.comment || 'The user didn\'t leave a text review.' }}</p>
+          </div>
+
+          <div class="card-actions">
+            @if (!isAcceptTab) {
+              <button class="action-btn approve" (click)="handleAccept(item.id, true)">
+                <i class="fas fa-check"></i> Approve
+              </button>
+            } @else {
+              <button class="action-btn suspend" (click)="handleAccept(item.id, false)">
+                <i class="fas fa-undo"></i> Suspend
+              </button>
+            }
+            <button class="action-btn delete" (click)="handleDelete(item.id)">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </div>
+        } @empty {
+        <div class="empty-state-card">
+          <i class="fas fa-inbox"></i>
+          <p>No feedbacks to display at the moment.</p>
+        </div>
+      }
+    </div>
+  }
+
+  @if (totalCount > pageSize && !loading) {
+    <div class="pagination-container">
+       <button class="p-btn" [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
+         <i class="fas fa-arrow-left"></i>
+       </button>
+       <div class="page-indicator">Page {{currentPage}}</div>
+       <button class="p-btn" [disabled]="(currentPage * pageSize) >= totalCount" (click)="onPageChange(currentPage + 1)">
+         <i class="fas fa-arrow-right"></i>
+       </button>
+    </div>
+  }
+</div>

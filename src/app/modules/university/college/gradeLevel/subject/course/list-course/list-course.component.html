@@ -1,0 +1,291 @@
+<div class="list-container">
+  @if (showDeleteConfirm) {
+  <div class="modal-overlay">
+    <div class="delete-card">
+      <i class="bi bi-exclamation-triangle text-warning"
+        style="font-size: 3rem; display: block; text-align: center;"></i>
+      <h3 style="text-align: center;">Delete Course?</h3>
+      <p style="text-align: center;">Are you sure you want to delete <strong>{{ courseToDelete.name }}</strong>?</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelDelete()">No, Cancel</button>
+        <button class="btn-confirm" (click)="deleteCourse()">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="toolbar" style="margin-bottom: 15px;">
+    <div class="filter-buttons">
+      <button class="btn-filter" [class.active]="selectedType === courseTypes.All"
+        (click)="onTabChange(courseTypes.All)">
+        <i class="bi bi-grid"></i> All
+      </button>
+      <button class="btn-filter" [class.active]="selectedType === courseTypes.Quiz"
+        (click)="onTabChange(courseTypes.Quiz)">
+        <i class="bi bi-journal-check"></i> Quizzes
+      </button>
+      <button class="btn-filter" [class.active]="selectedType === courseTypes.Pdf"
+        (click)="onTabChange(courseTypes.Pdf)">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+      </button>
+    </div>
+
+    <button routerLink="create" class="btn-create-modern">
+      <i class="bi bi-plus-lg"></i> <span>Create New Course</span>
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" [ngModel]="search" (keyup)="onSearchKeyup($event)" placeholder="Search courses..."
+        class="search-input-modern" />
+    </div>
+  </div>
+
+
+  @if (!loading) {
+  <div class="cards-grid">
+    @for (course of courses; track course.id) {
+    <div class="course-card">
+      <div class="card-header">
+        <img [src]="course.logoUrl || '/assets/default-course.png'"
+          style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; border: 1px solid var(--sky-300);" />
+
+        <div class="dropdown-actions" style="position: relative;">
+          <button class="dots-btn" (click)="$event.stopPropagation(); course.showMenu = !course.showMenu">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+
+          @if (course.showMenu) {
+          <div class="menu-backdrop" (click)="course.showMenu = false">
+          </div>
+
+          <div class="actions-menu">
+            <button [routerLink]="[ course.id, 'chapters']" class="btn-action">
+              <i class="bi bi-layers"></i> Chapters
+            </button>
+            @if(!course.videoUrl) {
+            <button (click)="openVideoModal(course)" class="btn-action">
+              <i class="bi bi-camera-reels-fill"></i> Server Video
+            </button>
+            }@else {
+            <button (click)="deleteVideo(course)" class="btn-action btn-delete">
+              <i class="bi bi-trash3-fill"></i>
+              <span>Delete Server Video</span>
+            </button>
+            }
+            @if(course.isQuiz){
+            <button [routerLink]="[ course.id, 'quizies']" [queryParams]="{ isCourse: true }" class="btn-action">
+              <i class="bi bi-patch-question"></i> Quizzes
+            </button>
+            }
+
+            <button [routerLink]="[course.chatGroupId, 'chats']" class="btn-action">
+              <i class="bi bi-chat-left-text"></i> Chat
+            </button>
+
+            <button [routerLink]="[ course.id, 'exams']" class="btn-action">
+              <i class="bi bi-clipboard-check"></i> Exams
+            </button>
+
+            <button [routerLink]="[course.id, 'subscriber']" class="btn-action">
+              <i class="bi bi-people-fill"></i> Students
+            </button>
+
+            <button *ngIf="isAdmin" [routerLink]="[ course.id,'requestjoin',]" class="btn-action">
+              <i class="bi bi-person-check"></i> Requests
+            </button>
+
+            <button [routerLink]="[course.id,'certificate']" class="btn-action">
+              <i class="bi bi-award"></i> Certificate
+            </button>
+
+            <button [routerLink]="[ course.id,'update' ]" class="btn-action">
+              <i class="bi bi-pencil-square"></i> Edit
+            </button>
+
+            <button [routerLink]="[course.id, 'feedbacks']" class="btn-action">
+              <i class="bi bi-star"></i> Reviews
+            </button>
+
+            <button (click)="duplicate(course.id)" class="btn-action">
+              <i class="bi bi-layers-half"></i> Copy
+            </button>
+
+            <button *ngIf="isAdmin" class="btn-action text-danger" (click)="confirmDelete(course)">
+              <i class="bi bi-trash3-fill"></i> Delete Course
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="badge-group">
+          <span class="custom-badge">{{ course.collegeName }}</span>
+          <span class="custom-badge bg-info" style="margin-left: 5px;">{{ course.subjectName }}</span>
+          @if(course.isPdf) { <span class="custom-badge bg-success" style="margin-left: 5px;">PDF</span> }
+          @if(course.isQuiz) { <span class="custom-badge bg-warning" style="margin-left: 5px;">Quiz</span> }
+        </div>
+
+        <h3 class="course-name">{{ course.name }}</h3>
+        <p class="course-title"><i class="bi bi-person"></i> {{ course.userName }}</p>
+
+        <div class="course-stats"
+          style="display: flex; gap: 15px; margin: 10px 0; font-size: 0.85rem; color: var(--slate-600);">
+          <span><i class="bi bi-layers"></i> {{ course.chapterCount }} Chapters</span>
+          <span><i class="bi bi-play-circle"></i> {{ course.lectureCount }} Lectures</span>
+
+          <span class="text-primary"><i class="bi bi-people"></i> {{ course.subscriberCount }} Students</span>
+
+        </div>
+
+        <div class="social-bar" style="border-top: 1px solid #eee; ">
+          <span class="phone-number" style="font-weight: bold; color: var(--primary-color);">{{ course.price }}
+            EGP</span>
+          <div style="flex: 1;"></div>
+
+          <div class="rating-box">
+            <i class="bi bi-star-fill text-warning"></i>
+            <span style="font-weight: 600; margin-left: 4px;">{{ course.rating }}</span>
+          </div>
+        </div>
+
+        @if(course.unvirsityName) {
+        <p style="font-size: 0.75rem; color: #888; margin-top: 5px;">
+          <i class="bi bi-geo-alt"></i> {{ course.unvirsityName }} - {{ course.gradeLevelName }}
+        </p>
+        }
+        <div class="video-links-wrapper">
+          @if(course.hasYouTubeVideo && course.youTubeVideoUrl) {
+          <a [href]="course.youTubeVideoUrl" target="_blank" class="video-link-btn btn-youtube"
+            (click)="$event.stopPropagation()">
+            <i class="bi bi-youtube"></i>
+            <span>YouTube</span>
+          </a>
+          }
+
+          @if(course.hasDriveVideo && course.driveVideoUrl) {
+          <a [href]="course.driveVideoUrl" target="_blank" class="video-link-btn btn-drive"
+            (click)="$event.stopPropagation()">
+            <i class="bi bi-google-drive"></i>
+            <span>Drive</span>
+          </a>
+          }
+
+          @if(course.videoUrl) {
+          <a [href]="course.videoUrl" target="_blank" class="video-link-btn btn-video"
+            (click)="$event.stopPropagation()">
+            <div class="content-wrapper">
+              <i class="bi bi-play-circle-fill"></i>
+              <span>Video</span>
+            </div>
+          </a>
+          }
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  @if (courses.length === 0) {
+  <div class="no-data">
+    <i class="bi bi-inbox" style="font-size: 4rem;"></i>
+    <p>No courses found in this category.</p>
+  </div>
+  }
+
+  @if (totalCount > pageSize) {
+  <div class="pagination-modern">
+    <button class="page-nav" [disabled]="pageIndex === 1" (click)="onPageChange(pageIndex - 1)">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    @for (p of pages; track p) {
+    <button class="page-num" [class.active]="p === pageIndex" (click)="onPageChange(p)">{{ p }}</button>
+    }
+    <button class="page-nav" [disabled]="pageIndex === totalPages" (click)="onPageChange(pageIndex + 1)">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+  }
+  }
+</div>
+@if (showVideoModal && selectedCourseForVideo) {
+<div class="modal-overlay" (click)="closeVideoModal()">
+  <div class="delete-card video-modal-card" (click)="$event.stopPropagation()">
+
+    <div class="form-header">
+      <h3><i class="bi bi-camera-reels-fill"></i> Upload Course Video</h3>
+      <button class="btn-close-form" (click)="closeVideoModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="video-modal-body">
+      <div class="target-lecture-badge">
+        <i class="bi bi-book"></i> Course: <strong>{{ selectedCourseForVideo.name }}</strong>
+      </div>
+
+      @if (!uploadComplete) {
+      <div class="upload-area">
+        <label class="upload-label" [class.disabled]="isUploadingVideo">
+          <i class="bi bi-cloud-upload"></i>
+          <span>Choose Video File</span>
+          <input type="file" accept="video/*" (change)="onVideoFileSelected($event)" [disabled]="isUploadingVideo"
+            hidden>
+        </label>
+
+        @if (selectedVideoFile) {
+        <div class="selected-file">
+          <i class="bi bi-file-play"></i>
+          <span>{{ selectedVideoFile.name }}</span>
+          <small>{{ (selectedVideoFile.size / 1024 / 1024).toFixed(2) }} MB</small>
+        </div>
+        }
+
+        @if (uploadError) {
+        <div class="error-message">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ uploadError }}
+        </div>
+        }
+      </div>
+      }
+
+      @if (isUploadingVideo) {
+      <div class="processing-alert">
+        <div class="alert-icon"><i class="bi bi-arrow-repeat spin"></i></div>
+        <div class="alert-text">
+          <strong>Uploading video...</strong>
+          <p>Please wait, this process may take a few moments.</p>
+        </div>
+      </div>
+      }
+
+      @if (uploadComplete) {
+      <div class="processing-alert success">
+        <div class="alert-icon"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="alert-text">
+          <strong>Upload Successful!</strong>
+          @if (uploadedVideoUrl) {
+          <p>Video URL: <code>{{ uploadedVideoUrl }}</code></p>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeVideoModal()" [disabled]="isUploadingVideo">
+        {{ uploadComplete ? 'Close' : 'Cancel' }}
+      </button>
+
+      @if (!uploadComplete) {
+      <button class="btn-confirm" (click)="uploadVideoToServer()" [disabled]="!selectedVideoFile || isUploadingVideo">
+        <i class="bi bi-cloud-arrow-up" style="margin-right: 5px;"></i>
+        {{ isUploadingVideo ? 'Uploading...' : 'Start Upload' }}
+      </button>
+      }
+    </div>
+  </div>
+</div>
+}

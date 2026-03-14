@@ -1,0 +1,107 @@
+<div class="list-container">
+
+  @if (showFormModal) {
+  <div class="modal-overlay">
+    <div class="form-card">
+      <h3>{{ isEditMode ? 'Edit Subject' : 'Add New Subject' }}</h3>
+      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 15px;">
+        To: Grade Level ID ({{ gradeLevelId.substring(0,8) }}...)
+      </p>
+
+      <form [formGroup]="subjectForm" (ngSubmit)="submitForm()">
+        <div class="form-group">
+          <label>Subject Name *</label>
+          <input type="text" formControlName="name" class="form-control" placeholder="e.g. Mathematics, Physics...">
+        </div>
+
+        <div class="form-group">
+          <label>Academic Term *</label>
+          <select formControlName="termId" class="form-control">
+            <option value="">Select Term</option>
+            @for (term of terms; track term.id) {
+            <option [value]="term.id">{{ term.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeFormModal()">Cancel</button>
+          <button type="submit" class="btn-confirm" [disabled]="subjectForm.invalid || loading">
+            {{ loading ? 'Processing...' : (isEditMode ? 'Update' : 'Create') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  @if (showDeleteConfirm) {
+  <div class="modal-overlay">
+    <div class="delete-card">
+      <i class="bi bi-exclamation-triangle text-warning"
+        style="font-size: 2.5rem; display: block; text-align: center;"></i>
+      <h3 style="text-align: center;">Delete Subject?</h3>
+      <p style="text-align: center; color: var(--muted);">Are you sure you want to delete <strong>{{
+          subjectToDelete?.name }}</strong>?</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+        <button class="btn-confirm" style="background: #dc3545;" (click)="deleteSubject()">Confirm Delete</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" [(ngModel)]="search" (input)="onSearchChange()" placeholder="Search subjects in this level..."
+        class="search-input-modern" />
+    </div>
+    @if (hasCreatePermission) {
+    <button (click)="openCreateModal()" class="btn-create-modern">
+      <i class="bi bi-plus-lg"></i> <span>Add Subject</span>
+    </button>
+    }
+  </div>
+
+  <div class="cards-grid">
+    @for (subject of subjects; track subject.id) {
+    <div class="course-card">
+      <div class="card-header">
+        <div class="chapter-icon-placeholder"><i class="bi bi-journal-bookmark-fill"></i></div>
+        <div class="dropdown-actions">
+          <button class="dots-btn" (click)="$event.stopPropagation(); subject['showMenu'] = !subject['showMenu']">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          @if (subject['showMenu']) {
+          <div class="actions-menu" (mouseleave)="subject['showMenu'] = false">
+            <button class="btn-courses" [routerLink]="[subject.id, 'courses']"><i class="bi bi-book-half"></i>
+              Courses</button>
+            @if (hasEditPermission) {
+            <button (click)="openEditModal(subject)"><i class="bi bi-pencil"></i> Edit</button>
+            }
+            @if(hasDeletePermission){
+            <button class="text-danger" (click)="confirmDelete(subject)"><i class="bi bi-trash"></i> Delete</button>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="badge-group">
+          <span class="custom-badge">{{ subject.termName }}</span>
+        </div>
+        <h3 class="course-name">{{ subject.name }}</h3>
+        <p class="course-title">Level: {{ subject.gradeLevelName }}</p>
+      </div>
+    </div>
+    }
+  </div>
+
+  @if (subjects.length === 0 && !loading) {
+  <div class="empty-state" style="text-align: center; padding: 100px; color: var(--muted);">
+    <i class="bi bi-book-half" style="font-size: 3rem;"></i>
+    <p>No subjects assigned to this level yet.</p>
+  </div>
+  }
+</div>

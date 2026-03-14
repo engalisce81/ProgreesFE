@@ -1,0 +1,40 @@
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid var(--surface-variant);
+
+  .detail-item {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .degree-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--purple-600); // لون الثيم الخاص بك
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(124, 58, 237, 0.05); // خلفية خفيفة جداً
+
+      &:hover {
+        background: rgba(124, 58, 237, 0.1);
+        transform: translateX(3px);
+        color: var(--purple-400);
+      }
+
+      .arrow-small {
+        font-size: 0.7rem;
+        opacity: 0.7;
+      }
+    }
+  }
+}

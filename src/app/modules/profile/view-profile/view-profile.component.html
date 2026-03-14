@@ -1,0 +1,74 @@
+<div class="list-container profile-container">
+  
+
+  @if (!loading && profile) {
+    <div class="profile-layout">
+      
+      <div class="profile-card-modern">
+        <div class="card-header-bg"></div>
+        
+        <div class="avatar-wrapper">
+          <div class="image-container" [class.uploading]="uploading">
+            <img [src]="profile.profilePictureUrl || 'https://picsum.photos/200/200'" class="avatar-img" />
+            @if (uploading) {
+              <div class="upload-overlay"><span class="loader-inner"></span></div>
+            }
+          </div>
+          <label class="edit-avatar-btn">
+            <i class="bi bi-camera-fill"></i>
+            <input type="file" accept="image/*" hidden (change)="onImageSelected($event)">
+          </label>
+        </div>
+
+        <div class="user-main-info">
+          <h2 class="username">{{ profile.name }}</h2>
+          <span class="badge-username">{{ profile.userName }}</span>
+        </div>
+
+        <div class="counters-grid">
+          <div class="counter-item">
+            <span class="count-num">{{ profile.lectureCount || 0 }}</span>
+            <span class="count-label">Lectures</span>
+          </div>
+          <div class="counter-item">
+            <span class="count-num">{{ profile.chapterCount || 0 }}</span>
+            <span class="count-label">Chapters</span>
+          </div>
+          <div class="counter-item">
+            <span class="count-num">{{ profile.courseJoinCount || 0 }}</span>
+            <span class="count-label">Courses</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="details-section">
+        <h3 class="section-title">Academic & Settings</h3>
+        
+        <div class="info-grid">
+          <div class="detail-item" *ngIf="profile.universityName">
+            <div class="icon-box"><i class="bi bi-building"></i></div>
+            <div class="text-group"><label>University</label><p>{{ profile.universityName }}</p></div>
+          </div>
+
+          <div class="detail-item" *ngIf="profile.collegeName">
+            <div class="icon-box"><i class="bi bi-mortarboard"></i></div>
+            <div class="text-group"><label>College</label><p>{{ profile.collegeName }}</p></div>
+          </div>
+
+
+         
+          <div class="detail-item clickable logout-item" (click)="logout()">
+            <div class="icon-box logout-icon">
+              <i class="bi bi-box-arrow-right"></i>
+            </div>
+            <div class="text-group">
+              <label>Account</label>
+              <p>Logout from App</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

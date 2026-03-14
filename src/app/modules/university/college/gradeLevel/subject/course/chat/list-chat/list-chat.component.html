@@ -1,0 +1,107 @@
+<div class="chat-wrapper">
+  <header class="chat-header">
+    <div class="user-info">
+      <div class="avatar">
+        <img *ngIf="messages.length > 0 && messages[0].logoUrl" [src]="messages[0].logoUrl" class="user-img">
+        <div *ngIf="!messages.length || !messages[0].logoUrl" class="avatar-placeholder">
+          {{ groupId?.substring(0, 2).toUpperCase() || 'GP' }}
+        </div>
+      </div>
+      <div class="details">
+        <h3>Group Chat Room</h3>
+      </div>
+    </div>
+  </header>
+
+  <div class="messages-container" #scrollContainer (scroll)="onScroll()">
+    
+    <div *ngIf="loading && !isLoadingMore && messages.length === 0" class="loader-spinner">
+      <div class="spinner"></div>
+      <span>Loading messages...</span>
+    </div>
+
+    <div class="load-more-container" *ngIf="hasMoreMessages">
+      <button 
+        class="load-more-btn" 
+        (click)="loadMoreMessages()" 
+        [disabled]="isLoadingMore">
+        <i class="fa fa-history" *ngIf="!isLoadingMore"></i>
+        <span>{{ isLoadingMore ? 'Loading older messages...' : 'Load More Messages' }}</span>
+      </button>
+    </div>
+
+    <div *ngFor="let msg of messages" 
+         [ngClass]="{'msg-me': msg.senderId === currentUserId, 'msg-them': msg.senderId !== currentUserId}" 
+         class="message-wrapper">
+      
+      <div class="avatar-wrapper" *ngIf="msg.senderId !== currentUserId">
+        <img [src]="msg.logoUrl || 'assets/images/default-avatar.png'" class="msg-avatar">
+      </div>
+      
+      <div class="message-content">
+        <div class="message-bubble">
+          <div class="msg-actions">
+            <button *ngIf="canEditMessage(msg)" (click)="startEdit(msg)" class="edit-btn" title="Edit">
+              <i class="fa fa-pen"></i>
+            </button>
+            <button *ngIf="canDeleteMessage(msg)" (click)="deleteMsg(msg.id)" class="delete-btn" title="Delete">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+
+          <span class="sender-name" *ngIf="msg.senderId !== currentUserId">
+            {{ msg.senderName || 'User' }}
+          </span>
+          
+          <p class="message-text">{{ msg.text }}</p>
+          
+          <div class="meta">
+            <span class="edited-mark" *ngIf="msg.lastModifiedAt">(edited)</span>
+            
+            <span class="time">{{ msg.sentAt | date:'shortTime' }}</span>
+            
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoadingMore" class="loading-more-indicator">
+      <div class="mini-spinner"></div>
+    </div>
+  </div>
+
+  <footer class="chat-footer">
+    
+    <div class="edit-banner" *ngIf="editingMessageId">
+      <div class="edit-info">
+        <i class="fa fa-edit"></i>
+        <span>Editing your message...</span>
+      </div>
+      <button (click)="cancelEdit()" class="cancel-edit-btn">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+    </div>
+
+    <div class="input-area">
+      <input type="text" 
+             [(ngModel)]="newMessage" 
+             (keyup.enter)="send()" 
+             [placeholder]="editingMessageId ? 'Update your message...' : 'Type a message...'"
+             class="message-input"
+             [disabled]="sending">
+      
+      <button class="send-btn" 
+              (click)="send()" 
+              [disabled]="!newMessage.trim() || sending"
+              [class.editing]="editingMessageId">
+        <div class="send-btn-content">
+          <i class="fa" 
+             [ngClass]="editingMessageId ? 'fa-check' : 'fa-paper-plane'" 
+             *ngIf="!sending"></i>
+          <div class="spinner-small" *ngIf="sending"></div>
+        </div>
+      </button>
+    </div>
+  </footer>
+</div>

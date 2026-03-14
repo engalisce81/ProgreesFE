@@ -1,0 +1,131 @@
+<div class="list-container">
+  <div class="toolbar">
+    <div class="header">
+      <h2 style="color: var(--text); margin: 0;">Update Course</h2>
+      <p style="color: var(--muted); font-size: 0.9rem;">Modify course details and settings</p>
+    </div>
+    <button (click)="back()" class="btn-filter">
+      <i class="bi bi-arrow-left"></i> Back to List
+    </button>
+  </div>
+
+  <div class="filter-buttons" style="margin-bottom: 30px; justify-content: center; gap: 15px;">
+    <button type="button" class="btn-filter" [class.active]="selectedTab === courseTypes.General" (click)="selectTab(courseTypes.General)">
+      <i class="bi bi-play-circle"></i> Standard Course
+    </button>
+    <button type="button" class="btn-filter" [class.active]="selectedTab === courseTypes.Quiz" (click)="selectTab(courseTypes.Quiz)">
+      <i class="bi bi-patch-question"></i> Exams Only
+    </button>
+    <button type="button" class="btn-filter" [class.active]="selectedTab === courseTypes.Pdf" (click)="selectTab(courseTypes.Pdf)">
+      <i class="bi bi-file-earmark-pdf"></i> PDF Library
+    </button>
+  </div>
+
+  <div class="form-card" style="max-width: 900px; margin: 0 auto; border: 1px solid var(--surface-variant);">
+    <form [formGroup]="courseForm" (ngSubmit)="submit()">
+      
+      <div class="row-grid">
+        <div class="form-group">
+          <label>Course Display Name *</label>
+          <input type="text" formControlName="name" class="form-control" placeholder="e.g. Full Chemistry 2024">
+        </div>
+        <div class="form-group">
+          <label>Title/Slogan *</label>
+          <input type="text" formControlName="title" class="form-control" placeholder="e.g. Master Organic Chemistry">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Comprehensive Description *</label>
+        <textarea formControlName="description" class="form-control" rows="4" placeholder="What will students learn?"></textarea>
+      </div>
+
+      <div class="row-grid">
+        <div class="form-group">
+          <label>Price (EGP) *</label>
+          <input type="number" formControlName="price" class="form-control">
+        </div>
+      </div>
+
+      <div class="animate-fade">
+        @if (selectedTab !== courseTypes.Pdf) {
+          <div class="form-group">
+            <label><i class="bi bi-youtube"></i> Introduction Video URL (YouTube)</label>
+            <input type="text" formControlName="youTubeVideoUrl" class="form-control" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label><i class="bi bi-youtube"></i> Introduction Video URL (Drive)</label>
+            <input type="text" formControlName="driveVideoUrl" class="form-control" placeholder="https://...">
+          </div>
+        }
+
+        @if (selectedTab === courseTypes.Pdf) {
+          <div class="form-group" style="border: 2px dashed var(--purple-600); padding: 20px; border-radius: 15px; background: rgba(124, 58, 237, 0.05);">
+            <label style="color: var(--purple-600); font-weight: bold;">Course Materials (PDF) *</label>
+            <input type="file" (change)="onPdfSelected($event)" class="form-control" accept=".pdf">
+            @if (pdfFileName) { <div style="margin-top: 10px; color: var(--text);">📄 {{ pdfFileName }}</div> }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Course Banner/Logo attach course card ration 100 (h) * 100 (w)</label>
+        <div style="display: flex; gap: 20px; align-items: center;">
+          <input type="file" (change)="onFileSelected($event)" class="form-control" accept="image/*" style="flex: 1;">
+          @if (logoPreview) {
+            <img [src]="logoPreview" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; border: 2px solid var(--purple-600);">
+          }
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        <div style="display: flex; gap: 30px;">
+          <label class="checkbox-container">
+            <input type="checkbox" formControlName="isActive">
+            <span class="checkmark"></span> Publicly Active
+          </label>
+          <label class="checkbox-container">
+            <input type="checkbox" formControlName="isLifetime">
+            <span class="checkmark"></span> Unlimited Access
+          </label>
+
+          <label class="checkbox-container">
+      <input type="checkbox" formControlName="showSubscriberCount">
+      <span class="checkmark"></span> Show Subscriber Count
+    </label>
+        </div>
+      </div>
+
+      @if (!courseForm.get('isLifetime')?.value) {
+        <div class="form-group animate-fade">
+          <label>Subscription Period (Days)</label>
+          <input type="number" formControlName="durationInDays" class="form-control">
+        </div>
+      }
+
+      <div class="form-section" formArrayName="infos">
+        <h3><i class="bi bi-stars"></i> Key Course Features</h3>
+        @for (info of infos.controls; track $index) {
+          <div class="info-row">
+            <input type="text" class="form-control" [formControlName]="$index" placeholder="e.g. Monthly Live Sessions">
+            <button type="button" (click)="removeInfo($index)" class="btn-delete-all">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        }
+        <button type="button" (click)="addInfo()" class="btn-filter" style="width: 100%; justify-content: center; background: var(--surface);">
+          <i class="bi bi-plus-circle"></i> Add Another Feature
+        </button>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" (click)="back()" class="btn-cancel">Cancel Changes</button>
+        <button type="submit" class="btn-confirm" [disabled]="loading || courseForm.invalid">
+          @if (loading) { <span class="spinner-border spinner-border-sm"></span> Saving... }
+          @else { <i class="bi bi-check-circle"></i> Update & Save Changes }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

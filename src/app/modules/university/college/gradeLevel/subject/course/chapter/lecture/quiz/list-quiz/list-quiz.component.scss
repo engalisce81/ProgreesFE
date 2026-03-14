@@ -1,0 +1,1109 @@
+:host {
+  display: block;
+  padding: 24px;
+  background: var(--bg-body);
+  min-height: 100vh;
+  direction: ltr; // Changed to LTR for English
+}
+
+/* --- Loading Spinner --- */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--surface-variant);
+    border-top: 5px solid var(--purple-600);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  .loading-text { margin-top: 15px; font-weight: 600; color: var(--purple-600); }
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* --- Lecture Header --- */
+.lecture-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: var(--bg-user);
+  padding: 20px 30px;
+  border-radius: 20px;
+  border: 1px solid var(--surface-variant);
+  box-shadow: var(--shadow-2);
+
+  h2 {
+    color: var(--purple-600);
+    margin: 0;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    i { color: var(--sky-300); }
+  }
+
+  .btn-create {
+    background: var(--purple-600);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    &:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4); }
+  }
+}
+
+/* --- Quiz Main Card --- */
+.quiz-card {
+  background: var(--bg-user);
+  border-radius: 20px;
+  border: 1px solid var(--surface-variant);
+  padding: 25px;
+  margin-bottom: 30px;
+  transition: 0.3s;
+  animation: fadeIn 0.5s ease;
+
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--surface-variant);
+
+    .quiz-title-area {
+      h3 {
+        color: var(--text);
+        font-size: 1.4rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        i { color: var(--purple-600); }
+      }
+      .quiz-desc-text {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin: 8px 0 0 32px; // Adjusted for LTR
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+/* --- Question Card --- */
+.question-card {
+  background: var(--surface);
+  border-radius: 16px;
+  border: 1px solid var(--surface-variant);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: 0.3s ease;
+
+  &:hover {
+    border-color: var(--purple-600);
+    transform: translateX(5px); // Positive for LTR
+  }
+
+  .question-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+
+    strong { flex: 1; color: var(--text); font-size: 1.1rem; }
+    
+    .badges {
+      display: flex;
+      gap: 10px;
+      .score { background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 4px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+      .type { background: var(--violet-900); color: var(--sky-300); padding: 4px 12px; border-radius: 8px; font-size: 0.8rem; }
+    }
+  }
+
+  .question-image {
+    margin: 15px 0;
+    img { max-width: 100%; max-height: 250px; border-radius: 12px; border: 2px solid var(--surface-variant); }
+  }
+}
+
+/* --- Answers List --- */
+.answers {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+
+  li {
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--surface-variant);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+
+    &.correct { 
+      border-left: 5px solid #10b981; // Swapped to left for LTR
+      background: rgba(16, 185, 129, 0.05);
+      i { color: #10b981; }
+    }
+    i.bi-x-circle-fill { color: #ef4444; }
+  }
+}
+
+/* --- Control Buttons (Actions) --- */
+.quiz-actions, .actions {
+  display: flex;
+  gap: 8px;
+
+  button {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; cursor: pointer; transition: 0.3s;
+    background: var(--surface-variant); color: var(--text);
+
+    &:hover { background: var(--purple-600); color: white; transform: scale(1.1); }
+    &.btn-delete:hover, &.delete:hover { background: #ef4444; }
+    &.btn-create-question:hover { background: #10b981; }
+  }
+}
+
+/* --- Modals --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+
+  .modal-card {
+    background: var(--bg-user);
+    border-radius: 24px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid var(--surface-variant);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &.large { max-width: 800px; }
+    &.delete-card { text-align: center; }
+  }
+
+  .modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; border-bottom: 1px solid var(--surface-variant); padding-bottom: 10px;
+    h3 { margin: 0; color: var(--purple-600); }
+    .close-btn { background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; }
+  }
+}
+
+/* --- Forms --- */
+.form-group {
+  display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;
+  label { font-weight: 600; color: var(--text); }
+  input, select, textarea {
+    padding: 12px; border-radius: 10px; border: 1px solid var(--surface-variant);
+    background: var(--card); color: var(--text); font-family: inherit;
+    &:focus { outline: none; border-color: var(--purple-600); }
+  }
+}
+
+.form-row { display: flex; gap: 15px; .form-group { flex: 1; } }
+
+.answers-section {
+  background: rgba(var(--purple-600-rgb), 0.03);
+  padding: 15px; border-radius: 12px; border: 1px dashed var(--surface-variant);
+  .section-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+}
+
+.answer-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  background: var(--bg-body); padding: 10px; border-radius: 8px;
+  input[type="checkbox"] { width: 20px; height: 20px; accent-color: #10b981; }
+  input[type="text"] { flex: 1; border: none; background: transparent; }
+  .btn-remove { background: none; border: none; color: #ef4444; cursor: pointer; }
+}
+
+.btn-submit {
+  width: 100%; padding: 15px; background: var(--purple-600); color: white;
+  border-radius: 12px; border: none; font-weight: bold; cursor: pointer;
+  transition: 0.3s;
+  &:hover:not(:disabled) { background: var(--purple-700); transform: translateY(-2px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+/* --- Delete Modal Specifics --- */
+.delete-card {
+    text-align: center;
+    padding: 40px !important;
+
+    .warning-icon {
+        font-size: 4.5rem;
+        color: #ef4444;
+        display: block;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.2));
+    }
+
+    h3 {
+        color: var(--text);
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+
+    p {
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 30px;
+        strong {
+            color: var(--text);
+            background: rgba(239, 68, 68, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-cancel {
+            background: var(--surface-variant);
+            color: var(--text);
+            &:hover { background: #94a3b8; }
+        }
+
+        .btn-confirm {
+            background: #ef4444;
+            color: white;
+            &:hover { 
+                background: #dc2626; 
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+            }
+        }
+    }
+}
+
+/* --- Answer Row Improvements --- */
+.answer-row {
+    .check-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--card);
+        padding: 5px;
+        border-radius: 8px;
+        border: 1px solid var(--surface-variant);
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #10b981;
+        }
+    }
+
+    input[type="text"] {
+        flex: 1;
+        background: transparent;
+        border: 1px solid transparent;
+        padding: 8px;
+        color: var(--text);
+        &:focus {
+            border-bottom-color: var(--purple-600);
+        }
+    }
+
+    .btn-remove {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+        &:hover {
+            background: #ef4444;
+            color: white;
+        }
+    }
+}
+
+/* --- Add Answer Button --- */
+.btn-add-ans {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s;
+    &:hover {
+        background: #059669;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+}
+
+/* --- File Input Customization --- */
+.file-input {
+    font-size: 0.9rem;
+    &::-webkit-file-upload-button {
+        background: var(--purple-600);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 8px;
+        margin-right: 10px; // Changed from margin-left for LTR
+        cursor: pointer;
+        font-family: inherit;
+        &:hover { background: var(--purple-700); }
+    }
+}
+
+/* --- Select Style --- */
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center; // Moved arrow to right for LTR
+    padding-right: 40px !important; // Padding on right
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .lecture-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+  .btn-create { width: 100%; justify-content: center; }
+  .form-row { flex-direction: column; gap: 0; }
+  .modal-card.large { height: 90vh; overflow-y: auto; }
+  .answers { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    .delete-card {
+        .modal-actions {
+            flex-direction: column-reverse;
+            button { width: 100%; }
+        }
+    }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+:host-context(body:has(.modal-overlay)) {
+  overflow: hidden;
+}
+/* ========================================= */
+/* Mobile Responsive Styles - استايل الموبايل */
+/* ========================================= */
+
+@media (max-width: 768px) {
+  /* Host Container */
+  :host {
+    padding: 12px !important;
+    min-height: auto;
+    direction: ltr;
+  }
+
+  /* إخفاء بعض العناصر غير الضرورية */
+  .lpx-topbar {
+    display: none !important;
+  }
+
+  /* إضافة مساحة أعلى الصفحة */
+  .lpx-content-container {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  /* Loading Spinner - الموبايل */
+  .loading-container {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border-width: 4px;
+    }
+    
+    .loading-text {
+      font-size: 14px;
+      color: var(--sky-300);
+    }
+  }
+
+  /* Lecture Header - الموبايل */
+  .lecture-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+
+    h2 {
+      font-size: 1.2rem;
+      gap: 8px;
+      
+      i {
+        font-size: 1.1rem;
+      }
+    }
+
+    .btn-create {
+      width: 100%;
+      justify-content: center;
+      padding: 14px;
+      font-size: 14px;
+      border-radius: 10px;
+      
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  /* Quiz Card - الموبايل */
+  .quiz-card {
+    padding: 16px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+
+    .quiz-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 12px;
+
+      .quiz-title-area {
+        width: 100%;
+        
+        h3 {
+          font-size: 1.1rem;
+          gap: 8px;
+          
+          i {
+            font-size: 1rem;
+          }
+        }
+
+        .quiz-desc-text {
+          font-size: 13px;
+          margin: 6px 0 0 28px;
+          line-height: 1.4;
+        }
+      }
+
+      .quiz-actions {
+        align-self: flex-end;
+        
+        button {
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+
+  /* Question Card - الموبايل */
+  .question-card {
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 14px;
+
+    &:hover {
+      transform: translateX(3px);
+    }
+
+    .question-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+
+      strong {
+        font-size: 1rem;
+        width: 100%;
+      }
+
+      .badges {
+        width: 100%;
+        justify-content: space-between;
+        
+        .score, .type {
+          padding: 4px 10px;
+          font-size: 12px;
+        }
+      }
+    }
+
+    .question-image {
+      img {
+        max-height: 180px;
+        border-radius: 10px;
+      }
+    }
+
+    .actions {
+      justify-content: flex-end;
+      margin-top: 12px;
+      
+      button {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  /* Answers List - الموبايل */
+  .answers {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+
+    li {
+      padding: 10px 14px;
+      border-radius: 10px;
+      
+      &.correct {
+        border-left-width: 4px;
+      }
+    }
+  }
+
+  /* Modals - الموبايل */
+  .modal-overlay {
+    padding: 16px;
+    align-items: flex-start;
+    padding-top: 60px;
+    
+    .modal-card {
+      width: 100%;
+      max-width: 100%;
+      padding: 20px;
+      border-radius: 18px;
+      max-height: 85vh;
+      overflow-y: auto;
+      
+      &.large {
+        max-height: 90vh;
+      }
+      
+      &.delete-card {
+        padding: 30px 20px !important;
+        
+        .warning-icon {
+          font-size: 3.5rem;
+          margin-bottom: 15px;
+        }
+        
+        h3 {
+          font-size: 1.3rem;
+        }
+        
+        p {
+          font-size: 14px;
+          margin-bottom: 20px;
+        }
+      }
+    }
+
+    .modal-header {
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      
+      h3 {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  /* Forms - الموبايل */
+  .form-group {
+    margin-bottom: 12px;
+    
+    label {
+      font-size: 13px;
+    }
+    
+    input, select, textarea {
+      padding: 10px;
+      font-size: 14px;
+    }
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .answers-section {
+    padding: 12px;
+    border-radius: 10px;
+    
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .answer-row {
+    padding: 8px;
+    border-radius: 6px;
+    
+    input[type="text"] {
+      font-size: 13px;
+    }
+    
+    .check-wrapper {
+      padding: 4px;
+      
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+      }
+    }
+    
+    .btn-remove {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .btn-add-ans {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  /* Submit Button */
+  .btn-submit {
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 10px;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+  }
+
+  /* File Input */
+  .file-input {
+    font-size: 13px;
+    
+    &::-webkit-file-upload-button {
+      padding: 8px 12px;
+      font-size: 13px;
+      margin-right: 8px;
+    }
+  }
+
+  /* Select Element */
+  select {
+    padding-right: 36px !important;
+    background-position: right 10px center;
+  }
+
+  /* Delete Modal Actions */
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+    
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 15px;
+    }
+  }
+}
+
+/* ========================================= */
+/* Small Phones - شاشات الموبايل الصغيرة جدًا */
+/* ========================================= */
+@media (max-width: 480px) {
+  :host {
+    padding: 8px !important;
+  }
+
+  .lecture-header {
+    padding: 14px;
+    
+    h2 {
+      font-size: 1.1rem;
+    }
+  }
+
+  .quiz-card {
+    padding: 14px;
+  }
+
+  .question-card {
+    padding: 14px;
+    
+    .question-header {
+      .badges {
+        flex-direction: column;
+        gap: 6px;
+        
+        .score, .type {
+          width: 100%;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  .modal-overlay {
+    padding: 12px;
+    padding-top: 50px;
+    
+    .modal-card {
+      padding: 16px;
+      
+      &.delete-card {
+        padding: 24px 16px !important;
+      }
+    }
+  }
+
+  .answers-section {
+    padding: 10px;
+  }
+
+  .answer-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    
+    .check-wrapper {
+      align-self: flex-start;
+    }
+  }
+
+  /* تحسين حجم الخطوط للأجهزة الصغيرة */
+  body {
+    font-size: 14px;
+  }
+
+  h2 { font-size: 18px; }
+  h3 { font-size: 16px; }
+}
+
+/* ========================================= */
+/* Tablet - تنسيقات للتابلت */
+/* ========================================= */
+@media (min-width: 769px) and (max-width: 1024px) {
+  :host {
+    padding: 20px;
+  }
+
+  .answers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quiz-card {
+    padding: 20px;
+  }
+
+  .question-card {
+    padding: 18px;
+  }
+
+  .modal-card.large {
+    max-width: 90%;
+  }
+}
+
+/* ========================================= */
+/* Landscape Mobile - الموبايل في الوضع الأفقي */
+/* ========================================= */
+@media (max-height: 600px) and (orientation: landscape) {
+  :host {
+    padding: 8px !important;
+  }
+
+  .modal-overlay {
+    padding-top: 20px;
+    align-items: flex-start;
+    
+    .modal-card {
+      max-height: 75vh;
+    }
+  }
+
+  .question-card {
+    max-height: 150px;
+    overflow: hidden;
+    
+    .question-image img {
+      max-height: 120px;
+    }
+  }
+
+  .answers {
+    max-height: 120px;
+    overflow-y: auto;
+  }
+}
+
+/* ========================================= */
+/* Accessibility - تحسينات للنقر */
+/* ========================================= */
+@media (pointer: coarse) {
+  /* زيادة حجم مناطق النقر للشاشات التي تعمل باللمس */
+  button,
+  .btn-create,
+  .quiz-actions button,
+  .actions button,
+  .btn-submit,
+  .modal-actions button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .answer-row .btn-remove {
+    min-height: 36px;
+    min-width: 36px;
+  }
+
+  /* زيادة المسافة بين العناصر */
+  .question-card {
+    margin-bottom: 24px;
+  }
+
+  /* تحسين أشكال الأزرار */
+  .btn-create {
+    border-radius: 10px;
+  }
+
+  /* زيادة حجم الـ checkbox */
+  .answer-row input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ========================================= */
+/* Dark Mode Adjustments - تحسينات للوضع الداكن */
+/* ========================================= */
+@media (prefers-color-scheme: dark) {
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .loading-container {
+    background: rgba(0, 0, 0, 0.95);
+  }
+
+  .question-card {
+    background: var(--card);
+  }
+}
+
+/* ========================================= */
+/* High Contrast Mode - وضع التباين العالي */
+/* ========================================= */
+@media (prefers-contrast: high) {
+  .question-card {
+    border: 2px solid var(--text);
+  }
+
+  .answers li.correct {
+    border-left: 6px solid #10b981;
+  }
+
+  button, .btn-create {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ========================================= */
+/* Reduced Motion - تقليل الحركات */
+/* ========================================= */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .question-card:hover {
+    transform: none;
+  }
+
+  .btn-create:hover,
+  .btn-submit:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ========================================= */
+/* Mobile Menu Overlay - قائمة الجوال */
+/* ========================================= */
+.mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 10000;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+
+  &.active {
+    display: flex;
+  }
+
+  .mobile-menu-btn {
+    width: 80%;
+    max-width: 300px;
+    padding: 16px;
+    background: var(--bg-btn);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &.logout {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      margin-top: 30px;
+    }
+  }
+
+  .close-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+  }
+}
+
+/* زر فتح القائمة في الموبايل */
+.mobile-menu-trigger {
+  display: none;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 9999;
+  width: 44px;
+  height: 44px;
+  background: var(--purple-600);
+  border-radius: 12px;
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-2);
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ========================================= */
+/* Adjustments for iOS Safari */
+/* ========================================= */
+@supports (-webkit-touch-callout: none) {
+  .modal-card {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .btn-submit {
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ========================================= */
+/* Adjustments for Mobile Browsers */
+/* ========================================= */
+@media (hover: none) and (pointer: coarse) {
+  .question-card:hover {
+    transform: none;
+    border-color: var(--surface-variant);
+  }
+
+  .answers li:hover {
+    background: var(--card);
+  }
+
+  button:active,
+  .btn-create:active {
+    transform: scale(0.98);
+  }
+}

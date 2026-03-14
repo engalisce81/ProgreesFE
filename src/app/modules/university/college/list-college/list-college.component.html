@@ -1,0 +1,113 @@
+<div class="list-container">
+
+  @if (showFormModal) {
+  <div class="modal-overlay">
+    <div class="form-card">
+      <h3>{{ isEditMode ? 'Edit College' : 'Create New College' }}</h3>
+
+      <form [formGroup]="collegeForm" (ngSubmit)="submitForm()">
+        <div class="form-group">
+          <label>College Name *</label>
+          <input type="text" formControlName="name" class="form-control" placeholder="Enter college name">
+          @if (collegeForm.get('name')?.invalid && collegeForm.get('name')?.touched) {
+          <small class="text-danger">College name is required</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>Grade Levels Count *</label>
+          <input type="number" formControlName="gradeLevelCount" class="form-control" placeholder="e.g. 4">
+          @if (collegeForm.get('gradeLevelCount')?.invalid && collegeForm.get('gradeLevelCount')?.touched) {
+          <small class="text-danger">Valid count is required</small>
+          }
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeFormModal()">Cancel</button>
+          <button type="submit" class="btn-confirm" [disabled]="collegeForm.invalid || loading">
+            {{ loading ? 'Saving...' : (isEditMode ? 'Update' : 'Create') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  @if (showDeleteConfirm) {
+  <div class="modal-overlay">
+    <div class="delete-card">
+      <i class="bi bi-exclamation-triangle text-warning"
+        style="font-size: 3rem; display: block; text-align: center; margin-bottom: 15px;"></i>
+      <h3 style="text-align: center;">Delete College?</h3>
+      <p style="text-align: center; color: var(--muted); margin-bottom: 25px;">
+        Are you sure you want to delete <strong>{{ collegeToDelete?.name }}</strong>? This action cannot be undone.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelDelete()">No, Keep it</button>
+        <button class="btn-confirm" style="background: #dc3545;" (click)="deleteCollege()">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" [(ngModel)]="search" (input)="onSearchChange()" placeholder="Search colleges..."
+        class="search-input-modern" />
+    </div>
+    @if(hasCreatePermission){
+    <button (click)="openCreateModal()" class="btn-create-modern">
+      <i class="bi bi-plus-lg"></i> <span>Add New College</span>
+    </button>
+    }
+  </div>
+
+
+
+  <div class="cards-grid">
+    @for (college of colleges; track college.id) {
+    <div class="course-card">
+      <div class="card-header">
+        <div class="chapter-icon-placeholder"><i class="bi bi-mortarboard"></i></div>
+        <div class="dropdown-actions">
+          <button class="dots-btn" (click)="$event.stopPropagation(); college['showMenu'] = !college['showMenu']">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          @if (college['showMenu']) {
+          <div class="actions-menu" (mouseleave)="college['showMenu'] = false">
+            <button class="btn-grades" [routerLink]="[college.id, 'gradeLevels']">
+              <i class="bi bi-bar-chart-steps"></i> Grade Levels
+            </button>
+            @if (hasEditPermission) {
+            <button class="btn-edit" (click)="openEditModal(college)">
+              <i class="bi bi-pencil-square"></i> Edit
+            </button>
+            }
+            @if(hasEditPermission){
+            <button class="btn-delete text-danger" (click)="confirmDelete(college)">
+              <i class="bi bi-trash3-fill"></i> Delete
+            </button>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="badge-group">
+          <span class="custom-badge">{{ college.gradeLevelCount }} Grade Levels</span>
+        </div>
+        <h3 class="course-name">{{ college.name }}</h3>
+        <p class="course-title">University ID: {{ universityId.substring(0,8) }}...</p>
+      </div>
+    </div>
+    }
+  </div>
+
+  @if (colleges.length === 0 && !loading) {
+  <div class="empty-state" style="text-align: center; padding: 100px; color: var(--muted);">
+    <i class="bi bi-building-x" style="font-size: 4rem;"></i>
+    <p>No colleges found for this university.</p>
+  </div>
+  }
+</div>

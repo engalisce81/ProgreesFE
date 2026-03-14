@@ -1,0 +1,270 @@
+<div class="list-container">
+
+  @if (showFormModal) {
+  <div class="modal-overlay">
+    <div class="form-card modern-modal">
+      <div class="modal-header">
+        <h3>{{ isEditMode ? 'Edit Advertisement' : 'Add New Advertisement' }}</h3>
+      </div>
+
+      <form [formGroup]="adForm" (ngSubmit)="submitForm()">
+        <div class="form-group">
+          <label>Ad Title *</label>
+          <input type="text" formControlName="title" class="form-control" placeholder="Enter ad title">
+        </div>
+
+        <div class="form-group">
+          <label>Ad Image * Recommended: 1080×540</label>
+
+          @if (adForm.get('youTubeVideoUrl')?.value || adForm.get('driveVideoUrl')?.value) {
+          <p class="text-danger" style="font-size: 12px; font-weight: bold;">
+            <i class="bi bi-slash-circle"></i> Image upload is disabled because a video link is present.
+          </p>
+          }
+
+          <div class="image-upload-preview"
+            [class.disabled-area]="adForm.get('youTubeVideoUrl')?.value || adForm.get('driveVideoUrl')?.value">
+            <div class="preview-wrapper" *ngIf="adForm.get('imageUrl')?.value">
+              <img [src]="adForm.get('imageUrl')?.value" alt="Preview">
+              <button type="button" class="btn-remove-image" (click)="removeImage()" title="Remove Image">
+                <i class="bi bi-trash3-fill"></i>
+              </button>
+            </div>
+
+            <div class="upload-btn-wrapper" *ngIf="!adForm.get('imageUrl')?.value">
+              <button type="button" class="btn-upload"
+                [disabled]="uploading || adForm.get('youTubeVideoUrl')?.value || adForm.get('driveVideoUrl')?.value">
+                <i class="bi" [class.bi-cloud-arrow-up]="!uploading" [class.bi-hourglass-split]="uploading"></i>
+                {{ uploading ? 'Uploading...' : 'Choose Image' }}
+              </button>
+
+              <input type="file" (change)="onFileSelected($event)" accept="image/*"
+                [disabled]="uploading || adForm.get('youTubeVideoUrl')?.value || adForm.get('driveVideoUrl')?.value" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" formControlName="startDate" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="date" formControlName="endDate" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Video (Youtube)</label>
+          <input type="text" formControlName="youTubeVideoUrl" class="form-control" placeholder="https://example.com">
+        </div>
+
+        <div class="form-group">
+          <label>Video (Drive)</label>
+          <input type="text" formControlName="driveVideoUrl" class="form-control" placeholder="https://example.com">
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="switch">
+            <input type="checkbox" formControlName="isActive">
+            <span class="slider round"></span>
+            <span class="label-text">Active Advertisement</span>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="showFormModal = false">Cancel</button>
+          <button type="submit" class="btn-confirm" [disabled]="adForm.invalid || loading || uploading">
+            {{ loading ? 'Saving...' : (isEditMode ? 'Update' : 'Save') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  @if (showDeleteConfirm) {
+  <div class="modal-overlay">
+    <div class="delete-card">
+      <i class="bi bi-trash3 text-danger delete-icon"></i>
+      <h3>Delete Advertisement?</h3>
+      <p>Are you sure you want to delete "{{ adToDelete.title }}"?</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="showDeleteConfirm = false">Back</button>
+        <button class="btn-confirm bg-danger" (click)="deleteAd()">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="toolbar">
+    <h2 class="page-title">Ads Management</h2>
+    <button (click)="openCreateModal()" class="btn-create-modern">
+      <i class="bi bi-plus-lg"></i> <span>Create Ad</span>
+    </button>
+  </div>
+
+  @if (loading && !ads.length) {
+
+  }
+
+  <div class="cards-grid">
+    @for (ad of ads; track ad.id) {
+    <div class="ad-card" [class.inactive]="!ad.isActive">
+      <div class="card-image">
+        <img [src]="ad.imageUrl" alt="Ad Image">
+        <div class="ad-status-badge" [class.active]="ad.isActive">
+          {{ ad.isActive ? 'Active' : 'Inactive' }}
+        </div>
+
+        <div class="dropdown-actions">
+          <button class="dots-btn" (click)="$event.stopPropagation(); ad.showMenu = !ad.showMenu">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          @if (ad.showMenu) {
+          <div class="actions-menu" (mouseleave)="ad.showMenu = false">
+            @if (!ad.videoUrl && !ad.imageUrl) {
+            <button class="btn-manage-video" (click)="openVideoModal(ad)">
+              <i class="bi bi-camera-reels-fill"></i> Server Video
+            </button>
+            }
+            @if(ad.videoUrl) {
+            <button (click)="deleteVideo(ad)" class="btn-action btn-delete">
+              <i class="bi bi-trash3-fill"></i>
+              <span>Delete Video</span>
+            </button>
+            }
+            <button (click)="openEditModal(ad)"><i class="bi bi-pencil"></i> Edit</button>
+            <button class="text-danger" (click)="confirmDelete(ad)"><i class="bi bi-trash3"></i> Delete</button>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="card-body">
+        <h3 class="course-name">{{ ad.title }}</h3>
+        <div class="ad-dates">
+          <small><i class="bi bi-calendar-event"></i> {{ ad.startDate | date:'dd MMM' }} - {{ ad.endDate | date:'dd MMM
+            yyyy' }}</small>
+        </div>
+        <div class="video-links-wrapper">
+          @if(ad.hasYouTubeVideo && ad.youTubeVideoUrl) {
+          <a [href]="ad.youTubeVideoUrl" target="_blank" class="video-link-btn btn-youtube"
+            (click)="$event.stopPropagation()">
+            <i class="bi bi-youtube"></i>
+            <span>YouTube</span>
+          </a>
+          }
+
+          @if(ad.hasDriveVideo && ad.driveVideoUrl) {
+          <a [href]="ad.driveVideoUrl" target="_blank" class="video-link-btn btn-drive"
+            (click)="$event.stopPropagation()">
+            <i class="bi bi-google-drive"></i>
+            <span>Drive</span>
+          </a>
+          }
+          @if(ad.videoUrl) {
+          <a [href]="ad.videoUrl" target="_blank" class="video-link-btn btn-video" (click)="$event.stopPropagation()">
+            <div class="content-wrapper">
+              <i class="bi bi-play-circle-fill"></i>
+              <span>Video</span>
+            </div>
+          </a>
+          }
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  @if (!loading && ads.length === 0) {
+  <div class="empty-state">
+    <i class="bi bi-megaphone"></i>
+    <p>No advertisements found.</p>
+  </div>
+  }
+</div>
+
+
+@if (showVideoModal && selectedAdForVideo) {
+<div class="modal-overlay" (click)="closeVideoModal()">
+  <div class="delete-card video-modal-card" (click)="$event.stopPropagation()">
+
+    <div class="form-header">
+      <h3>
+        <i class="bi bi-camera-reels-fill"></i>
+        Upload Ad Video
+      </h3>
+      <button class="btn-close-form" (click)="closeVideoModal()" title="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="video-modal-body">
+      <div class="target-lecture-badge">
+        <i class="bi bi-megaphone-fill"></i> Ad Title: <strong>{{ selectedAdForVideo.title }}</strong>
+      </div>
+
+      @if (!uploadComplete) {
+      <div class="upload-area">
+        <label class="upload-label" [class.disabled]="isUploadingVideo">
+          <i class="bi bi-cloud-arrow-up"></i>
+          <span>Select Ad Video File</span>
+          <input type="file" accept="video/*" (change)="onVideoFileSelected($event)" [disabled]="isUploadingVideo"
+            hidden>
+        </label>
+
+        @if (selectedVideoFile) {
+        <div class="selected-file">
+          <i class="bi bi-file-earmark-play"></i>
+          <span>{{ selectedVideoFile.name }}</span>
+          <small>{{ (selectedVideoFile.size / 1024 / 1024).toFixed(2) }} MB</small>
+        </div>
+        }
+
+        @if (uploadError) {
+        <div class="error-message">
+          <i class="bi bi-exclamation-circle-fill"></i> {{ uploadError }}
+        </div>
+        }
+      </div>
+      }
+
+      @if (isUploadingVideo) {
+      <div class="processing-alert">
+        <div class="alert-icon"><i class="bi bi-arrow-repeat spin"></i></div>
+        <div class="alert-text">
+          <strong>Uploading Ad...</strong>
+          <p>The video is being processed, please stay on this page.</p>
+        </div>
+      </div>
+      }
+
+      @if (uploadComplete) {
+      <div class="processing-alert success">
+        <div class="alert-icon"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="alert-text">
+          <strong>Successfully Uploaded!</strong>
+          @if (uploadedVideoUrl) {
+          <p>Live URL: <code>{{ uploadedVideoUrl }}</code></p>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeVideoModal()" [disabled]="isUploadingVideo">
+        {{ uploadComplete ? 'Close' : 'Cancel' }}
+      </button>
+
+      @if (!uploadComplete) {
+      <button class="btn-confirm" (click)="uploadVideoToServer()" [disabled]="!selectedVideoFile || isUploadingVideo">
+        {{ isUploadingVideo ? 'Uploading...' : 'Publish Video' }}
+      </button>
+      }
+    </div>
+  </div>
+</div>
+}

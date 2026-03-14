@@ -1,0 +1,349 @@
+<div class="list-container">
+
+    @if (showDeleteConfirm) {
+    <div class="modal-overlay">
+        <div class="delete-card">
+            <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
+            <h3>Delete Lecture?</h3>
+            <p>Are you sure you want to delete <strong>{{ lectureToDelete?.title }}</strong>?</p>
+            <div class="modal-actions">
+                <button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+                <button class="btn-confirm" (click)="deleteLecture()">Confirm Delete</button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <div class="toolbar">
+        <div class="search-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" [(ngModel)]="search" (input)="onSearchChange()" placeholder="Search lectures content..."
+                class="search-input-modern" />
+        </div>
+
+        <button (click)="openCreateForm()" class="btn-create-modern" *ngIf="!showForm">
+            <i class="bi bi-plus-lg"></i> <span>Add New Lecture</span>
+        </button>
+    </div>
+
+    @if (showForm) {
+    <div class="form-overlay-wrapper">
+        <div class="inline-form-card">
+            <div class="form-header">
+                <h3><i class="bi bi-pencil-square"></i> {{ isEditMode ? 'Update Lecture' : 'Create New Lecture' }}</h3>
+                <button class="btn-close-form" (click)="closeForm()"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <form [formGroup]="lectureForm" (ngSubmit)="submit()" class="modern-grid-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lecture Title *</label>
+                        <input type="text" formControlName="title" class="form-control" placeholder="Enter title">
+                    </div>
+                    <div class="form-group">
+                        <label>Short Content *</label>
+                        <input type="text" formControlName="content" class="form-control"
+                            placeholder="Enter description">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Video URL (YouTube)</label>
+                        <input type="text" formControlName="youTubeVideoUrl" class="form-control"
+                            placeholder="YouTube or Vimeo link">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Video URL (Drive)</label>
+                        <input type="text" formControlName="driveVideoUrl" class="form-control"
+                            placeholder="YouTube or Vimeo link">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Success Rate (%)</label>
+                        <input type="number" formControlName="successQuizRate" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-row triple">
+                    <div class="form-group">
+                        <label>Quiz Time (min)</label>
+                        <input type="number" formControlName="quizTime" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Allowed Tries</label>
+                        <input type="number" formControlName="quizTryCount" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Quiz Count</label>
+                        <input type="number" formControlName="quizCount" class="form-control">
+                    </div>
+                </div>
+
+                <div class="pdf-upload-section">
+                    <label class="upload-label">
+                        <i class="bi bi-cloud-upload"></i> Upload PDF Files
+                        <input type="file" (change)="onPdfSelected($event)" multiple accept="application/pdf" hidden>
+                    </label>
+
+                    <div class="file-tags">
+                        @for (url of existingPdfs; track $index) {
+                        <span class="tag existing">
+                            <i class="bi bi-file-earmark-check"></i> Old PDF {{ $index + 1 }}
+                            <i class="bi bi-x" (click)="removeExistingPdf($index)"></i>
+                        </span>
+                        }
+                        @for (file of pdfFiles; track $index) {
+                        <span class="tag new">
+                            <i class="bi bi-file-earmark-plus"></i> {{ file.name }}
+                            <i class="bi bi-x" (click)="removeNewPdf($index)"></i>
+                        </span>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-checkboxes">
+                    <label class="switch-label">
+                        <input type="checkbox" formControlName="isVisible">
+                        <span>Is Visible</span>
+                    </label>
+                    <label class="switch-label">
+                        <input type="checkbox" formControlName="isFree">
+                        <span>Free Lecture</span>
+                    </label>
+                    <label class="switch-label">
+                        <input type="checkbox" formControlName="isRequiredQuiz">
+                        <span>Required Quiz</span>
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" (click)="closeForm()">Discard</button>
+                    <button type="submit" class="btn-confirm" [disabled]="lectureForm.invalid || submitting">
+                        {{ submitting ? 'Saving...' : (isEditMode ? 'Update Now' : 'Create Lecture') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
+
+    @if (!loading) {
+    <div class="cards-grid" [class.dimmed]="showForm">
+        @for (lecture of lectures; track lecture.id) {
+        <div class="course-card">
+            <div class="card-header">
+                <div class="lecture-icon-box">
+                    <i class="bi bi-play-circle-fill"></i>
+                </div>
+
+                <div class="dropdown-actions">
+                    <button class="dots-btn" (click)="$event.stopPropagation(); lecture.showMenu = !lecture.showMenu">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+
+                    @if (lecture.showMenu) {
+                    <div class="actions-menu" (mouseleave)="lecture.showMenu = false">
+                        <button [routerLink]="[ lecture.id ,'quizies']" title="View Questions">
+                            <i class="bi bi-card-list"></i> Questions
+                        </button>
+                        @if(!lecture.videoUrl){
+                        <button class="btn-manage-video" (click)="openVideoForm(lecture)">
+                            <i class="bi bi-camera-reels-fill"></i> Server Video
+                        </button>
+                        }
+                        @else {
+                        <button (click)="deleteVideo(lecture)" class="btn-action btn-delete">
+                            <i class="bi bi-trash3-fill"></i>
+                            <span>Delete Video</span>
+                        </button>
+                        }
+                        <button (click)="openEditForm(lecture)">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </button>
+                        <button class="text-danger" (click)="confirmDelete(lecture)">
+                            <i class="bi bi-trash3"></i> Delete
+                        </button>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="badge-group">
+                    <span class="custom-badge">{{ lecture.chapterName }}</span>
+                    @if (lecture.isFree) {
+                    <span class="custom-badge free">Free</span>
+                    }
+
+                </div>
+
+                <h3 class="course-name">{{ lecture.title }}</h3>
+                <p class="course-title text-truncate">{{ lecture.content }}</p>
+
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <i class="bi bi-question-square"></i> {{ lecture.quizCount }} Quizzes
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-clock"></i> {{ lecture.quizTime }} min
+                    </div>
+
+                    <div class="detail-item pdf-dropdown-container">
+                        <button class="pdf-toggle-btn"
+                            (click)="$event.stopPropagation(); lecture.showPdfs = !lecture.showPdfs"
+                            [disabled]="!lecture.pdfUrls?.length">
+                            <i class="bi bi-file-earmark-pdf"></i>
+                            {{ lecture.pdfUrls?.length || 0 }} Files
+                            <i class="bi bi-chevron-down arrow-icon"></i>
+                        </button>
+
+                        @if (lecture.showPdfs && lecture.pdfUrls?.length) {
+                        <div class="pdf-menu" (mouseleave)="lecture.showPdfs = false">
+                            @for (url of lecture.pdfUrls; track $index) {
+                            <a [href]="url" target="_blank" class="pdf-link">
+                                <i class="bi bi-file-pdf"></i> View PDF {{ $index + 1 }}
+                            </a>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="detail-item">
+                        <i [class]="lecture.isVisible ? 'bi bi-eye text-success' : 'bi bi-eye-slash text-muted'"></i>
+                        {{ lecture.isVisible ? 'Visible' : 'Hidden' }}
+                    </div>
+
+
+                </div>
+                <div class="video-links-wrapper">
+                    @if(lecture.hasYouTubeVideo && lecture.youTubeVideoUrl) {
+                    <a [href]="lecture.youTubeVideoUrl" target="_blank" class="video-link-btn btn-youtube"
+                        (click)="$event.stopPropagation()">
+                        <i class="bi bi-youtube"></i>
+                        <span>YouTube</span>
+                    </a>
+                    }
+
+                    @if(lecture.hasDriveVideo && lecture.driveVideoUrl) {
+                    <a [href]="lecture.driveVideoUrl" target="_blank" class="video-link-btn btn-drive"
+                        (click)="$event.stopPropagation()">
+                        <i class="bi bi-google-drive"></i>
+                        <span>Drive</span>
+                    </a>
+                    }
+
+                    @if(lecture.videoUrl) {
+                    <a [href]="lecture.videoUrl" target="_blank" class="video-link-btn btn-video"
+                        (click)="$event.stopPropagation()">
+                        <div class="content-wrapper">
+                            <i class="bi bi-play-circle-fill"></i>
+                            <span>Video</span>
+                        </div>
+                    </a>
+                    }
+
+
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    }
+
+    @if (totalCount > pageSize) {
+    <div class="pagination-modern">
+        <button class="page-nav" [disabled]="pageIndex === 1" (click)="onPageChange(pageIndex - 1)">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        @for (p of pages; track p) {
+        <button class="page-num" [class.active]="p === pageIndex" (click)="onPageChange(p)">
+            {{ p }}
+        </button>
+        }
+        <button class="page-nav" [disabled]="pageIndex === totalPages" (click)="onPageChange(pageIndex + 1)">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+    }
+</div>
+@if (showVideoModal && selectedLectureForVideo) {
+<div class="modal-overlay" (click)="closeVideoModal()">
+    <div class="video-modal-card" (click)="$event.stopPropagation()">
+
+        <div class="form-header">
+            <h3><i class="bi bi-camera-reels-fill"></i> Upload Lecture Video</h3>
+            <button class="btn-close-form" (click)="closeVideoModal()" title="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="video-modal-body">
+            <div class="target-lecture-badge">
+                <i class="bi bi-journal-bookmark-fill"></i>
+                <span>Lecture: <strong>{{ selectedLectureForVideo.title }}</strong></span>
+            </div>
+
+            @if (!uploadComplete) {
+            <div class="upload-area">
+                <label class="upload-label" [class.disabled]="isUploadingVideo">
+                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                    <span>Select Video File</span>
+                    <input type="file" accept="video/*" (change)="onVideoFileSelected($event)"
+                        [disabled]="isUploadingVideo" hidden>
+                </label>
+
+                @if (selectedVideoFile) {
+                <div class="selected-file">
+                    <i class="bi bi-play-circle-fill"></i>
+                    <span>{{ selectedVideoFile.name }}</span>
+                    <small>{{ (selectedVideoFile.size / 1024 / 1024).toFixed(2) }} MB</small>
+                </div>
+                }
+
+                @if (uploadError) {
+                <div class="error-message">
+                    <i class="bi bi-exclamation-octagon-fill"></i> {{ uploadError }}
+                </div>
+                }
+            </div>
+            }
+
+            @if (isUploadingVideo) {
+            <div class="processing-alert">
+                <div class="alert-icon"><i class="bi bi-arrow-repeat spin"></i></div>
+                <div class="alert-text">
+                    <strong>Uploading Lecture Content...</strong>
+                    <p>The file is being securely uploaded to the library.</p>
+                </div>
+            </div>
+            }
+
+            @if (uploadComplete) {
+            <div class="processing-alert success">
+                <div class="alert-icon"><i class="bi bi-check-circle-all"></i></div>
+                <div class="alert-text">
+                    <strong>Upload Completed!</strong>
+                    <p>The video has been successfully linked to this lecture.</p>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" (click)="closeVideoModal()" [disabled]="isUploadingVideo">
+                {{ uploadComplete ? 'Close' : 'Cancel' }}
+            </button>
+
+            @if (!uploadComplete) {
+            <button class="btn-confirm" (click)="uploadVideoToServer()"
+                [disabled]="!selectedVideoFile || isUploadingVideo">
+                <i class="bi bi-file-earmark-arrow-up"></i>
+                {{ isUploadingVideo ? 'Uploading...' : 'Upload Now' }}
+            </button>
+            }
+        </div>
+    </div>
+</div>
+}

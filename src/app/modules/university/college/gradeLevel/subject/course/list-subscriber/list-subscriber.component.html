@@ -1,0 +1,98 @@
+<div class="list-container">
+  
+  @if (showDeleteConfirm) {
+  <div class="modal-overlay">
+    <div class="delete-card">
+      <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
+      <h3>Remove Subscriber?</h3>
+      <p>Are you sure you want to remove <strong>{{ studentToDelete?.name }}</strong> from this course?</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+        <button class="btn-confirm-delete" (click)="deleteStudent()">Confirm Delete</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="toolbar" [class.dimmed]="showDeleteConfirm">
+    <div class="search-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" [(ngModel)]="search" (input)="onSearchChange()" 
+             placeholder="Search subscribers by name or email..." class="search-input-modern" />
+    </div>
+  </div>
+
+  @if (!loading) {
+  <div class="cards-grid" [class.dimmed]="showDeleteConfirm">
+    @for (student of students; track student.userId) {
+    <div class="course-card">
+      <div class="card-header">
+        <img [src]="student.logoUrl || 'assets/images/default-avatar.png'" 
+             class="student-avatar" 
+             style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; border: 1px solid var(--sky-300);" />
+
+        <div class="dropdown-actions">
+          <button class="dots-btn" (click)="$event.stopPropagation(); student.showMenu = !student.showMenu">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+
+          @if (student.showMenu) {
+          <div class="actions-menu" (mouseleave)="student.showMenu = false">
+            <button class="btn-action text-danger" (click)="confirmDelete(student)">
+              <i class="bi bi-person-x"></i> Unsubscribe
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="badge-group">
+          <span class="custom-badge">{{ student.courseName }}</span>
+          
+        </div>
+
+        <h3 class="course-name">{{ student.name }}</h3>
+        <p class="course-title"><i class="bi bi-envelope"></i> {{ student.email }}</p>
+<div class="details-grid">
+    <div class="detail-item">
+        <i class="bi bi-calendar-check"></i> 
+        <span>{{ student.creationTime | date:'shortDate' }}</span>
+    </div>
+
+    <div class="detail-item">
+        <a [routerLink]="['degree', student.userId]" class="degree-link">
+            <i class="bi bi-mortarboard"></i> 
+            <span>View Degrees</span>
+            <i class="bi bi-chevron-right arrow-small"></i>
+        </a>
+    </div>
+</div>
+
+      </div>
+    </div>
+    }
+  </div>
+
+  @if (students.length === 0) {
+  <div class="no-data" style="text-align: center; padding: 50px;">
+    <i class="bi bi-people" style="font-size: 4rem; color: var(--muted);"></i>
+    <p>No subscribers found.</p>
+  </div>
+  }
+
+  @if (totalCount > pageSize) {
+  <div class="pagination-modern">
+    <button class="page-nav" [disabled]="pageNumber === 1" (click)="onPageChange(pageNumber - 1)">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    @for (p of pages; track p) {
+    <button class="page-num" [class.active]="p === pageNumber" (click)="onPageChange(p)">{{ p }}</button>
+    }
+    <button class="page-nav" [disabled]="pageNumber === totalPages" (click)="onPageChange(pageNumber + 1)">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+  }
+  }
+</div>

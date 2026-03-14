@@ -1,0 +1,347 @@
+/* الحاوية الرئيسية */
+.list-container {
+  padding: 24px;
+  position: relative;
+  min-height: 100vh;
+  background: var(--bg-body);
+  direction: ltr; // التأكد من الاتجاه من اليسار لليمين
+}
+
+/* --- Toolbar (Search & Add Button) --- */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 20px;
+  flex-wrap: wrap;
+
+  .search-wrapper {
+    position: relative;
+    flex: 1;
+    max-width: 450px;
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--sky-300);
+      font-size: 1.1rem;
+    }
+
+    .search-input-modern {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--surface-variant);
+      border-radius: 14px;
+      padding: 14px 14px 14px 50px;
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+
+      &:focus {
+        outline: none;
+        border-color: var(--purple-600);
+        box-shadow: var(--ring);
+        background: var(--surface-variant);
+      }
+    }
+  }
+}
+
+.btn-create-modern {
+  background: var(--bg-btn);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: var(--shadow-1);
+  text-decoration: none;
+
+  &:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: var(--shadow-2);
+  }
+}
+
+/* --- Modals (Form & Delete) --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.form-card, .delete-card {
+  background: var(--dialog);
+  padding: 30px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: var(--shadow-3);
+  animation: modalSlideUp 0.3s ease-out;
+
+  h3 { margin-bottom: 20px; color: var(--text); font-size: 1.4rem; }
+}
+
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+
+  label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 0.9rem; }
+  
+  .form-control {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--surface-variant);
+    border-radius: 10px;
+    padding: 12px;
+    color: var(--text);
+    transition: 0.2s;
+    &:focus { outline: none; border-color: var(--purple-600); }
+  }
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  label { cursor: pointer; color: var(--text); font-weight: 500; }
+  input { width: 18px; height: 18px; cursor: pointer; }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+  }
+
+  .btn-cancel { background: var(--surface-variant); color: var(--text); &:hover { background: #444; } }
+  .btn-confirm { background: var(--bg-btn); color: white; &:hover { filter: brightness(1.1); } }
+}
+
+/* --- Chapters Cards Grid --- */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 25px;
+}
+
+.course-card {
+  background: var(--bg-user);
+  border-radius: var(--radius);
+  border: 1px solid var(--surface-variant);
+  position: relative;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-8px);
+    border-color: var(--purple-600);
+    box-shadow: var(--shadow-2);
+  }
+
+  .card-header {
+    height: 90px;
+    background: var(--surface-variant);
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-bottom: 2px solid var(--violet-900);
+
+    .chapter-icon-placeholder {
+      width: 50px;
+      height: 50px;
+      background: var(--card);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--sky-300);
+      color: var(--sky-300);
+      font-size: 1.4rem;
+    }
+  }
+}
+
+/* Actions Menu */
+.dropdown-actions {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+
+  .dots-btn {
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    color: var(--text);
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    cursor: pointer;
+    &:hover { background: var(--purple-600); color: white; }
+  }
+}
+
+.actions-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: var(--dialog);
+  border: 1px solid var(--surface-variant);
+  border-radius: 12px;
+  width: 170px;
+  z-index: 100;
+  padding: 6px;
+  box-shadow: var(--shadow-3);
+  animation: fadeIn 0.2s ease-out;
+
+  button {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 10px;
+    color: var(--text);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    &:hover { background: var(--bg-btn); color: white; }
+    &.text-danger:hover { background: #ef4444; }
+  }
+}
+
+/* Card Body */
+.card-body {
+  padding: 20px;
+  .badge-group {
+    display: flex;
+    margin-bottom: 12px;
+    .custom-badge {
+      background: var(--violet-900);
+      color: var(--sky-300);
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      &.free { color: #10b981; }
+    }
+  }
+  .course-name { font-size: 1.15rem; color: var(--text); margin-bottom: 5px; font-weight: 600; }
+  .course-title { color: var(--muted); font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+}
+
+/* Pagination */
+.pagination-modern {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+
+  .page-nav, .page-num {
+    background: var(--surface);
+    border: 1px solid var(--surface-variant);
+    color: var(--text);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    &.active { background: var(--bg-btn); color: white; border: none; }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+  }
+}
+
+/* Animations */
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .toolbar { flex-direction: column; .search-wrapper { max-width: 100%; width: 100%; } .btn-create-modern { width: 100%; justify-content: center; } }
+}
+
+/* تعديل حاوية الفورم لتسمح بالسكروول */
+.form-card {
+  max-height: 90vh; /* لا يتعدى 90% من طول الشاشة */
+  overflow-y: auto; /* إضافة سكروول عمودي إذا لزم الأمر */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  /* تحسين شكل السكروول بار */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--surface-variant);
+    border-radius: 10px;
+  }
+
+  h3 {
+    position: sticky; /* جعل العنوان ثابت أثناء السكروول */
+    top: 0;
+    background: var(--dialog);
+    padding-bottom: 15px;
+    z-index: 10;
+    margin-top: 0;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+/* لضمان أن الأزرار تظل في الأسفل وثابتة (اختياري) */
+.modal-actions {
+  position: sticky;
+  bottom: 0;
+  background: var(--dialog);
+  padding-top: 15px;
+  margin-top: 10px;
+  z-index: 10;
+}
+
+/* تنسيق الصفوف (الشبكة) لتقليل المساحات الضائعة */
+.row-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* تقسيم الحقول بجانب بعضها */
+  gap: 15px;
+  
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr; /* في الموبايل يكون حقل واحد في الصف */
+  }
+}

@@ -1,0 +1,75 @@
+<div class="component">
+  <!-- ✅ حالة التحميل -->
+  @if (loading) {
+    
+  }
+  @else {
+
+    <!-- ✅ البطاقات الإحصائية -->
+    <div class="stats-grid">
+      @for (stat of stats; track stat) {
+        <div class="stat-card {{stat.class}}">
+          <div class="stat-header">
+            <div>
+              <div class="stat-value">{{stat.value}}</div>
+              <div class="stat-title">{{stat.title}}</div>
+            </div>
+            <div class="stat-icon">
+              <i [class]="stat.icon"></i>
+            </div>
+          </div>
+          <div class="stat-footer">
+            <span style="color: var(--success);">
+              <i class="fas fa-arrow-up"></i> {{stat.increase}} increase
+            </span>
+            <span> compared to last month</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ✅ الرسومات البيانية -->
+    <div class="charts-container">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Student & Teacher Growth Over the Year</div>
+         
+        </div>
+        <div class="chart-content">
+          <canvas id="growthChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Course Distribution by Category</div>
+        </div>
+        <div class="chart-content">
+          <canvas id="categoryChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ النشاطات الأخيرة -->
+    <div class="recent-activities">
+      <div class="chart-header">
+        <div class="chart-title">Recent Activities on the Platform</div>
+        <div style="color: var(--sky-300); cursor: pointer;">View All</div>
+      </div>
+      <ul class="activity-list">
+        @for (activity of activities; track activity) {
+          <li class="activity-item">
+            <div class="activity-icon">
+              <i [class]="activity.icon"></i>
+            </div>
+            <div class="activity-details">
+              <div class="activity-title">{{activity.title}}</div>
+              <div class="activity-time">{{activity.time}}</div>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</div>
+

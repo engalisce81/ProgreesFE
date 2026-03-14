@@ -1,0 +1,108 @@
+<div class="list-container">
+  
+  @if (showFormModal) {
+    <div class="modal-overlay">
+      <div class="form-card">
+        <h3>{{ isEditMode ? 'Edit Chapter' : 'Create New Chapter' }}</h3>
+        
+        <form [formGroup]="chapterForm" (ngSubmit)="submitForm()">
+          <div class="form-group">
+            <label>Chapter Name *</label>
+            <input type="text" formControlName="name" class="form-control" placeholder="Enter chapter name">
+            @if (chapterForm.get('name')?.invalid && chapterForm.get('name')?.touched) {
+              <small class="text-danger">Chapter name is required</small>
+            }
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" formControlName="isFree"> Is Free Access
+            </label>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="closeFormModal()">Cancel</button>
+            <button type="submit" class="btn-confirm" [disabled]="chapterForm.invalid || loading">
+              {{ loading ? 'Saving...' : (isEditMode ? 'Update' : 'Create') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (showDeleteConfirm) {
+    <div class="modal-overlay">
+      <div class="delete-card">
+        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem; display: block; text-align: center; margin-bottom: 15px;"></i>
+        <h3 style="text-align: center;">Delete Chapter?</h3>
+        <p style="text-align: center; color: var(--muted); margin-bottom: 25px;">
+          Are you sure you want to delete <strong>{{ chapterToDelete?.name }}</strong>? This action cannot be undone.
+        </p>
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="cancelDelete()">No, Keep it</button>
+          <button class="btn-confirm" style="background: #dc3545;" (click)="deleteChapter()">Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" [(ngModel)]="search" (input)="onSearchChange()" placeholder="Search chapters..." class="search-input-modern" />
+    </div>
+    
+    <button (click)="openCreateModal()" class="btn-create-modern">
+      <i class="bi bi-plus-lg"></i> <span>Add New Chapter</span>
+    </button>
+  </div>
+
+  
+
+  @if (!loading) {
+    <div class="cards-grid">
+      @for (chapter of chapters; track chapter.id) {
+        <div class="course-card">
+          <div class="card-header">
+            <div class="chapter-icon-placeholder"><i class="bi bi-layer-forward"></i></div>
+            <div class="dropdown-actions">
+              <button class="dots-btn" (click)="$event.stopPropagation(); chapter.showMenu = !chapter.showMenu">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              @if (chapter.showMenu) {
+                <div class="actions-menu" (mouseleave)="chapter.showMenu = false">
+                  <button [routerLink]="[chapter.id, 'lectures']">
+                    <i class="bi bi-play-circle"></i> Lectures
+                  </button>
+                  <button (click)="openEditModal(chapter)">
+                    <i class="bi bi-pencil-square"></i> Edit
+                  </button>
+                  <button class="text-danger" (click)="confirmDelete(chapter)">
+                    <i class="bi bi-trash3"></i> Delete
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-group">
+              <span class="custom-badge" [class.free]="chapter.isFree">
+                {{ chapter.isFree ? 'Free Access' : 'Premium' }}
+              </span>
+            </div>
+            <h3 class="course-name">{{ chapter.name }}</h3>
+            <p class="course-title">{{ chapter.courseName }}</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (chapters.length === 0) {
+      <div class="empty-state" style="text-align: center; padding: 100px; color: var(--muted);">
+        <i class="bi bi-folder2-open" style="font-size: 4rem;"></i>
+        <p>No chapters found in this course.</p>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,18 @@
+<div class="logout d-flex align-items-center gap-2">
+  <!-- زر تسجيل الخروج -->
+  <button (click)="logout()" class="logout-btn btn btn-outline-danger">
+    <i class="bi bi-box-arrow-right"></i>
+  </button>
+               @if(hasRole("admin")){
+
+  <!-- Dropdown لاختيار الترم -->
+  <select class="form-select term-dropdown" 
+          [(ngModel)]="selectedTermId" 
+          (change)="onTermChange()">
+              <option value="" disabled selected> Select Term</option>
+
+   @for(term of termList ; track $index) {<option  [value]="term.id">
+      {{ term.name }}
+    </option>}
+  </select>}
+</div>

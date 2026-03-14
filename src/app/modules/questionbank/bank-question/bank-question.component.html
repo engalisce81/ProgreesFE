@@ -1,0 +1,49 @@
+@if (loading) {
+
+} @else {
+<div class="question-list">
+    <div class="lecture-header">
+        <h2><i class="bi bi-database"></i> Bank Questions</h2>
+        </div>
+
+    @for (q of questions; track q.id) {
+    <div class="question-card">
+        <div class="question-header">
+            <div class="question-title-area">
+                <strong><i class="bi bi-question-circle"></i> {{ q.tittle }}</strong>
+                <div class="badges">
+                    <span class="type">({{ q.questionType }})</span>
+                </div>
+            </div>
+           
+        </div>
+
+        @if (q.logoUrl && q.logoUrl.trim() !== '') {
+            <div class="question-image">
+                <img [src]="q.logoUrl" alt="Question media" />
+            </div>
+        }
+
+        <ul class="answers">
+            @for (ans of q.questionAnswers; track ans.answerId) {
+            <li [class.correct]="ans.isSelected">
+                <span>{{ ans.answer }}</span>
+                @if (ans.isSelected) {
+                    <i class="bi bi-check-circle-fill"></i>
+                } @else {
+                    <i class="bi bi-circle"></i>
+                }
+            </li>
+            }
+        </ul>
+    </div>
+    }
+
+    @if (questions.length === 0) {
+    <div class="no-data" style="text-align: center; padding: 40px; opacity: 0.6;">
+        <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+        <p>No questions found in this bank.</p>
+    </div>
+    }
+</div>
+}
