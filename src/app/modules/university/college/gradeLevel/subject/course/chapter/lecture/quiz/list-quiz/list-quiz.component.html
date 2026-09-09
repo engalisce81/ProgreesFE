@@ -2,7 +2,7 @@
 
 @if (activeModal !== 'none') {
 <div class="modal-overlay">
-    
+
     @if (activeModal === 'delete') {
     <div class="modal-card delete-card">
         <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
@@ -74,25 +74,96 @@
                     </div>
 
                     <div class="form-group">
+    <label>Question Bank</label>
+
+    <select formControlName="questionBankId">
+        <option value="">No Bank (Optional)</option>
+
+        @for (bank of questionBanks; track bank.id) {
+            <option [value]="bank.id">
+                {{ bank.name }}
+            </option>
+        }
+    </select>
+</div>
+                    <!-- <div class="form-group">
                         <label>Question Bank</label>
-                        <select formControlName="questionBankId">
-                            <option value="">No Bank (Optional)</option>
-                            @for (bank of questionBanks; track bank.id) {
-                            <option [value]="bank.id">{{ bank.name }}</option>
-                            }
-                        </select>
-                    </div>
+
+                     <select formControlName="questionBankId">
+                        <option value="">No Bank (Optional)</option>
+
+                        @for (bank of questionBanks; track bank.id) {
+                            <option [value]="bank.id">
+                                {{ bank.name }}
+                            </option>
+                        }
+                    </select>
+                    </div> -->
 
                     <div class="form-group">
                         <label>Score</label>
                         <input type="number" formControlName="score">
                     </div>
                 </div>
-                
-                <div class="form-group">
+
+                <div class="form-group image-upload-group">
+    <label>Question Image <span>(Optional)</span></label>
+
+    <!-- Current / Selected Image -->
+    @if (questionForm.get('logoUrl')?.value) {
+        <div class="image-preview">
+
+            <div class="image-preview-header">
+                <span>
+                    <i class="bi bi-image"></i>
+                    {{ selectedFile ? 'New Image' : 'Current Image' }}
+                </span>
+
+                <button
+                    type="button"
+                    class="remove-image-btn"
+                    (click)="removeQuestionImage()"
+                    title="Remove image">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+
+            <div class="image-preview-body">
+                <img
+                    [src]="questionForm.get('logoUrl')?.value"
+                    alt="Question image">
+            </div>
+        </div>
+    }
+
+    <!-- Upload New Image -->
+    <div class="file-upload-box">
+        <i class="bi bi-cloud-arrow-up"></i>
+
+        <div class="upload-content">
+            <strong>
+                {{ selectedFile ? selectedFile.name : 'Choose a new image' }}
+            </strong>
+
+            <span>
+                PNG, JPG, JPEG
+            </span>
+        </div>
+
+        <label class="choose-file-btn">
+            <i class="bi bi-folder2-open"></i>
+            Browse
+            <input
+                type="file"
+                (change)="onFileSelected($event)"
+                accept="image/*">
+        </label>
+    </div>
+</div>
+                <!-- <div class="form-group">
                     <label>Image (Optional)</label>
                     <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input">
-                </div>
+                </div> -->
 
                 <div class="answers-section">
                     <div class="section-header">
@@ -163,7 +234,7 @@
                 <button class="delete" (click)="initDelete(question, 'question')" title="Delete"><i class="bi bi-trash-fill"></i></button>
             </div>
         </div>
-        
+
         @if (question.logoUrl) {
             <div class="question-image"><img [src]="question.logoUrl" alt="Question media"></div>
         }

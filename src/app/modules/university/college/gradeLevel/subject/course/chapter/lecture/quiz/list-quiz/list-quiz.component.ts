@@ -28,7 +28,7 @@ export class ListQuizComponent implements OnInit {
   // Forms
   quizForm!: FormGroup;
   questionForm!: FormGroup;
-  
+
   // Data for Lookups
   questionTypes: LookupDto[] = [];
   questionBanks: LookupDto[] = []; // إضافة قائمة بنوك الأسئلة
@@ -53,13 +53,13 @@ export class ListQuizComponent implements OnInit {
     this.isCourse = isCourseParam === 'true';
 
     // الآن نأتي بالـ ID بناءً على القيمة الصحيحة لـ isCourse
-    this.refId = this.isCourse 
-      ? this.route.snapshot.paramMap.get('courseId') 
+    this.refId = this.isCourse
+      ? this.route.snapshot.paramMap.get('courseId')
       : this.route.snapshot.paramMap.get('lectureId');
 
     // إعادة تهيئة الفورم بالقيم الجديدة
     this.initForms();
-    
+
     // تحميل البيانات
     if (this.refId) {
       this.loadLecture();
@@ -93,9 +93,9 @@ export class ListQuizComponent implements OnInit {
   loadLecture() {
     this.loading = true;
     this.lectureService.getLectureWithQuizzes(this.refId,this.isCourse).subscribe({
-      next: (res) => { 
-        this.lecture = res.data; 
-        this.loading = false; 
+      next: (res) => {
+        this.lecture = res.data;
+        this.loading = false;
       },
       error: () => this.loading = false
     });
@@ -137,14 +137,14 @@ export class ListQuizComponent implements OnInit {
     if (this.quizForm.invalid) return;
     this.loading = true;
 
-    const request$ = (this.isEditMode 
+    const request$ = (this.isEditMode
       ? this.quizService.update(this.selectedId!, this.quizForm.value)
       : this.quizService.create(this.quizForm.value)) as Observable<any>;
 
     request$.subscribe({
-      next: () => { 
-        this.closeModal(); 
-        this.loadLecture(); 
+      next: () => {
+        this.closeModal();
+        this.loadLecture();
       },
       error: (err) => {
         console.error(err);
@@ -157,45 +157,115 @@ export class ListQuizComponent implements OnInit {
   get answers() { return this.questionForm.get('answers') as FormArray; }
 
   addAnswer(answer = '', isCorrect = false) {
-    this.answers.push(this.fb.group({ 
-      answer: [answer, Validators.required], 
-      isCorrect: [isCorrect] 
+    this.answers.push(this.fb.group({
+      answer: [answer, Validators.required],
+      isCorrect: [isCorrect]
     }));
   }
 
   removeAnswer(index: number) { this.answers.removeAt(index); }
 
   openQuestionForm(quizId: string, question?: any) {
-    this.isEditMode = !!question;
-    this.selectedId = question?.id;
-    this.activeModal = 'questionForm';
-    this.answers.clear();
-    
-    if (question) {
-      // التعديل يشمل الـ questionBankId
-      this.questionForm.patchValue({
-        title: question.title,
-        questionTypeId: question.questionTypeId,
-        questionBankId: question.questionBankId,
-        quizId: quizId,
-        score: question.score,
-        logoUrl: question.logoUrl
-      });
-      question.answers.forEach((a: any) => this.addAnswer(a.answer, a.isCorrect));
-    } else {
-      this.questionForm.reset({ quizId, score: 1, questionBankId: '' });
-      this.addAnswer(); 
-    }
+
+  this.isEditMode = !!question;
+  this.selectedId = question?.id;
+  this.activeModal = 'questionForm';
+
+  this.answers.clear();
+  this.selectedFile = undefined;
+
+  if (question) {
+
+    console.log('Editing Question:', question);
+    console.log('Question Bank ID:', question.questionBankId);
+
+    this.questionForm.patchValue({
+      title: question.title ?? '',
+      questionTypeId: question.questionTypeId?.toString() ?? '',
+      questionBankId: question.questionBankId?.toString() ?? '',
+      quizId: quizId,
+      score: question.score ?? 1,
+      logoUrl: question.logoUrl ?? ''
+    });
+
+    question.answers?.forEach((a: any) => {
+      this.addAnswer(
+        a.answer ?? '',
+        a.isCorrect ?? false
+      );
+    });
+
+  } else {
+
+    this.questionForm.reset({
+      title: '',
+      questionTypeId: '',
+      questionBankId: '',
+      quizId: quizId,
+      score: 1,
+      logoUrl: ''
+    });
+
+    this.addAnswer();
+  }
+}
+
+//   openQuestionForm(quizId: string, question?: any) {
+
+//     this.isEditMode = !!question;
+//     this.selectedId = question?.id;
+//     this.activeModal = 'questionForm';
+//     this.answers.clear();
+
+//     if (question) {
+//       // التعديل يشمل الـ questionBankId
+//       this.questionForm.patchValue({
+//         title: question.title,
+//         questionTypeId: question.questionTypeId,
+//         // questionBankId: question.questionBankId,
+//         questionBankId: question.questionBankId?.toString() ?? '',
+//         quizId: quizId,
+//         score: question.score,
+// logoUrl: question.logoUrl ?? ''
+//       });
+//       question.answers.forEach((a: any) => this.addAnswer(a.answer, a.isCorrect));
+//     } else {
+//       this.questionForm.reset({ quizId, score: 1, questionBankId: '' });
+//       this.addAnswer();
+//     }
+//   }
+
+  onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+
+  if (!input.files || input.files.length === 0) {
+    return;
   }
 
-  onFileSelected(event: any) { 
-    this.selectedFile = event.target.files[0]; 
-  }
+  const file = input.files[0];
+
+  this.selectedFile = file;
+
+  // Preview للصور الجديدة قبل الحفظ
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    this.questionForm.patchValue({
+      logoUrl: reader.result as string
+    });
+  };
+
+  reader.readAsDataURL(file);
+}
+
+  // onFileSelected(event: any) {
+  //   this.selectedFile = event.target.files[0];
+  // }
 
   submitQuestion() {
     if (this.questionForm.invalid) return;
     this.loading = true;
-    
+
     if (this.selectedFile) {
       this.mediaService.uploadImage(this.selectedFile).subscribe({
         next: (res) => {
@@ -205,20 +275,20 @@ export class ListQuizComponent implements OnInit {
         error: () => this.saveQuestion()
       });
     } else {
-      this.questionForm.patchValue({ logoUrl: "" });
+      // this.questionForm.patchValue({ logoUrl: "" });
       this.saveQuestion();
     }
   }
 
   private saveQuestion() {
-    const request$ = (this.isEditMode 
+    const request$ = (this.isEditMode
       ? this.questionService.update(this.selectedId!, this.questionForm.value)
       : this.questionService.create(this.questionForm.value)) as Observable<any>;
 
     request$.subscribe({
-      next: () => { 
-        this.closeModal(); 
-        this.loadLecture(); 
+      next: () => {
+        this.closeModal();
+        this.loadLecture();
       },
       error: (err) => {
         console.error(err);
@@ -235,24 +305,53 @@ export class ListQuizComponent implements OnInit {
 
   confirmDeleteYes() {
     this.loading = true;
-    const obs$ = (this.confirmData.type === 'quiz' 
+    const obs$ = (this.confirmData.type === 'quiz'
       ? this.quizService.delete(this.confirmData.id)
       : this.questionService.delete(this.confirmData.id)) as Observable<any>;
 
     obs$.subscribe({
-      next: () => { 
-        this.closeModal(); 
-        this.loadLecture(); 
+      next: () => {
+        this.closeModal();
+        this.loadLecture();
       },
       error: () => this.loading = false
     });
   }
 
-  closeModal() {
-    this.activeModal = 'none';
-    this.loading = false;
-    this.selectedFile = undefined;
-    this.isEditMode = false;
-    this.selectedId = undefined;
-  }
+closeModal() {
+  this.activeModal = 'none';
+  this.loading = false;
+  this.selectedFile = undefined;
+  this.isEditMode = false;
+  this.selectedId = undefined;
+
+  this.questionForm.reset({
+    title: '',
+    questionTypeId: '',
+    questionBankId: '',
+    quizId: '',
+    score: 1,
+    logoUrl: ''
+  });
+
+  this.answers.clear();
+}
+
+  // closeModal() {
+  //   this.activeModal = 'none';
+  //   this.loading = false;
+  //   this.selectedFile = undefined;
+  //   this.isEditMode = false;
+  //   this.selectedId = undefined;
+  // }
+
+
+
+removeQuestionImage() {
+  this.questionForm.patchValue({
+    logoUrl: ''
+  });
+
+  this.selectedFile = undefined;
+}
 }

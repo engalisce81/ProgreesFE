@@ -180,7 +180,7 @@ privacySections = [
       { label: 'WhatsApp', value: '+201018326343', link: 'https://wa.me/201018326343' },
       { label: 'Telegram', value: '@The_progress_support', link: 'https://t.me/The_progress_support' },
       { label: 'Facebook Page', value: 'The Progress Academy', link: 'https://www.facebook.com/share/1FoU3nnwtH/' },
-      { label: 'Website', value: 'https://the-progress-academy.online/', link: 'https://the-progress-academy.online/' }
+      // { label: 'Website', value: 'https://the-progress-academy.online/', link: 'https://the-progress-academy.online/' }
     ],
     footer: 'WhatsApp and Telegram are the fastest ways to reach our support team. Facebook messages are also monitored regularly.'
   }
