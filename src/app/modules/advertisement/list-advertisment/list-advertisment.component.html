@@ -191,12 +191,12 @@
 <div class="modal-overlay" (click)="closeVideoModal()">
   <div class="delete-card video-modal-card" (click)="$event.stopPropagation()">
 
+    <!-- Header -->
     <div class="form-header">
       <h3>
-        <i class="bi bi-camera-reels-fill"></i>
-        Upload Ad Video
+        <i class="bi bi-camera-reels-fill"></i> Upload Ad Video
       </h3>
-      <button class="btn-close-form" (click)="closeVideoModal()" title="Close">
+      <button class="btn-close-form" (click)="closeVideoModal()" [disabled]="isUploadingVideo">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
@@ -206,13 +206,13 @@
         <i class="bi bi-megaphone-fill"></i> Ad Title: <strong>{{ selectedAdForVideo.title }}</strong>
       </div>
 
-      @if (!uploadComplete) {
+      <!-- ── اختيار الملف ── -->
+      @if (!isUploadingVideo && !uploadComplete) {
       <div class="upload-area">
-        <label class="upload-label" [class.disabled]="isUploadingVideo">
+        <label class="upload-label">
           <i class="bi bi-cloud-arrow-up"></i>
           <span>Select Ad Video File</span>
-          <input type="file" accept="video/*" (change)="onVideoFileSelected($event)" [disabled]="isUploadingVideo"
-            hidden>
+          <input type="file" accept="video/*" (change)="onVideoFileSelected($event)" hidden>
         </label>
 
         @if (selectedVideoFile) {
@@ -231,40 +231,58 @@
       </div>
       }
 
+      <!-- ── Progress Bar ── -->
       @if (isUploadingVideo) {
-      <div class="processing-alert">
-        <div class="alert-icon"><i class="bi bi-arrow-repeat spin"></i></div>
-        <div class="alert-text">
-          <strong>Uploading Ad...</strong>
-          <p>The video is being processed, please stay on this page.</p>
+      <div class="upload-progress-wrapper">
+        <div class="progress-header">
+          <span class="progress-label">
+            <i class="bi bi-arrow-repeat spin"></i> Uploading…
+          </span>
+          <span class="progress-percent">{{ uploadProgress }}%</span>
         </div>
+
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            [style.width.%]="uploadProgress"
+            [class.near-done]="uploadProgress >= 90">
+          </div>
+        </div>
+
+        <p class="progress-status">{{ uploadStatusText }}</p>
       </div>
       }
 
+      <!-- ── نجاح ── -->
       @if (uploadComplete) {
       <div class="processing-alert success">
         <div class="alert-icon"><i class="bi bi-check-circle-fill"></i></div>
         <div class="alert-text">
           <strong>Successfully Uploaded!</strong>
+          <p>The video is being processed in the background.</p>
           @if (uploadedVideoUrl) {
-          <p>Live URL: <code>{{ uploadedVideoUrl }}</code></p>
+          <p><small>Live URL: <code>{{ uploadedVideoUrl }}</code></small></p>
           }
         </div>
       </div>
       }
     </div>
 
+    <!-- Footer -->
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeVideoModal()" [disabled]="isUploadingVideo">
         {{ uploadComplete ? 'Close' : 'Cancel' }}
       </button>
 
       @if (!uploadComplete) {
-      <button class="btn-confirm" (click)="uploadVideoToServer()" [disabled]="!selectedVideoFile || isUploadingVideo">
-        {{ isUploadingVideo ? 'Uploading...' : 'Publish Video' }}
+      <button class="btn-confirm"
+        (click)="uploadVideoToServer()"
+        [disabled]="!selectedVideoFile || isUploadingVideo">
+        {{ isUploadingVideo ? 'Uploading ' + uploadProgress + '%…' : 'Publish Video' }}
       </button>
       }
     </div>
+
   </div>
 </div>
 }

@@ -56,6 +56,17 @@ const routes: Routes = [
     canActivate:[AuthRedirectGuard],
     loadChildren: () => import('./modules/profile/profile.module').then(m => m.ProfileModule),
   },
+
+  {
+    path: 'report-messages',
+    canActivate:[AuthRedirectGuard],
+    loadChildren: () => import('./modules/report-messages/report-messages.module').then(m => m.ReportMessagesModule),
+  },
+
+  {
+    path: 'policy',
+    loadChildren: () => import('./modules/policy/policy.module').then(m => m.PolicyModule),
+  },
   
   {
     path: 'identity',

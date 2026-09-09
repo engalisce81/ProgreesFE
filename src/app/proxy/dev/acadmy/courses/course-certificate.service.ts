@@ -20,8 +20,8 @@ export class CourseCertificateService {
 
     // إضافة بقية البيانات (التي سيستقبلها الـ Backend من الـ Form)
     if (input.courseId) formData.append('courseId', input.courseId);
-    formData.append('nameXPosition', input.nameXPosition.toString());
-    formData.append('nameYPosition', input.nameYPosition.toString());
+    if (input.nameXPosition) formData.append('nameXPosition', input.nameXPosition.toString());
+    if (input.nameYPosition) formData.append('nameYPosition', input.nameYPosition.toString());
 
     return this.restService.request<any, void>({
       method: 'POST',

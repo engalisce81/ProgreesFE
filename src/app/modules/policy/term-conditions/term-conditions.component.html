@@ -1,0 +1,51 @@
+<div class="terms-wrapper">
+  <div class="container">
+    <header class="terms-header">
+      <h1>Terms & Conditions</h1>
+      <p class="effective-date">The Progress — Effective Date: {{ effectiveDate }}</p>
+      <div class="intro-text">
+        Please read these Terms and Conditions ("Terms") carefully before using The Progress mobile application or website. By creating an account or using the app, you confirm that you have read, understood, and agree to be bound by these Terms and our Privacy Policy.
+      </div>
+    </header>
+
+    <div class="terms-content">
+      @for (section of sections; track section.id) {
+        <section class="section-card">
+          <h2>{{ section.title }}</h2>
+          <p>{{ section.content }}</p>
+          
+          @if (section.bullets) {
+            <ul>
+              @for (bullet of section.bullets; track bullet) {
+                <li>{{ bullet }}</li>
+              }
+            </ul>
+          }
+
+          @if (section.contacts) {
+            <div class="contact-grid">
+              @for (contact of section.contacts; track contact.label) {
+                <div class="contact-item">
+                  <strong>{{ contact.label }}:</strong> 
+                  @if (contact.link) {
+                    <a [href]="contact.link" target="_blank">{{ contact.value }}</a>
+                  } @else {
+                    <span>{{ contact.value }}</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (section.footer) {
+            <p class="section-footer">{{ section.footer }}</p>
+          }
+        </section>
+      }
+    </div>
+
+    <footer class="main-footer">
+      <p>© 2026 The Progress Team. All rights reserved.</p>
+    </footer>
+  </div>
+</div>

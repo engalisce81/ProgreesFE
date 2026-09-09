@@ -72,7 +72,7 @@
                         <input type="number" formControlName="quizTime" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>Allowed Tries</label>
+                        <label>Allowed Tries Per Quiz</label>
                         <input type="number" formControlName="quizTryCount" class="form-control">
                     </div>
                     <div class="form-group">
@@ -270,80 +270,97 @@
 </div>
 @if (showVideoModal && selectedLectureForVideo) {
 <div class="modal-overlay" (click)="closeVideoModal()">
-    <div class="video-modal-card" (click)="$event.stopPropagation()">
+  <div class="video-modal-card" (click)="$event.stopPropagation()">
 
-        <div class="form-header">
-            <h3><i class="bi bi-camera-reels-fill"></i> Upload Lecture Video</h3>
-            <button class="btn-close-form" (click)="closeVideoModal()" title="Close">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
-
-        <div class="video-modal-body">
-            <div class="target-lecture-badge">
-                <i class="bi bi-journal-bookmark-fill"></i>
-                <span>Lecture: <strong>{{ selectedLectureForVideo.title }}</strong></span>
-            </div>
-
-            @if (!uploadComplete) {
-            <div class="upload-area">
-                <label class="upload-label" [class.disabled]="isUploadingVideo">
-                    <i class="bi bi-cloud-arrow-up-fill"></i>
-                    <span>Select Video File</span>
-                    <input type="file" accept="video/*" (change)="onVideoFileSelected($event)"
-                        [disabled]="isUploadingVideo" hidden>
-                </label>
-
-                @if (selectedVideoFile) {
-                <div class="selected-file">
-                    <i class="bi bi-play-circle-fill"></i>
-                    <span>{{ selectedVideoFile.name }}</span>
-                    <small>{{ (selectedVideoFile.size / 1024 / 1024).toFixed(2) }} MB</small>
-                </div>
-                }
-
-                @if (uploadError) {
-                <div class="error-message">
-                    <i class="bi bi-exclamation-octagon-fill"></i> {{ uploadError }}
-                </div>
-                }
-            </div>
-            }
-
-            @if (isUploadingVideo) {
-            <div class="processing-alert">
-                <div class="alert-icon"><i class="bi bi-arrow-repeat spin"></i></div>
-                <div class="alert-text">
-                    <strong>Uploading Lecture Content...</strong>
-                    <p>The file is being securely uploaded to the library.</p>
-                </div>
-            </div>
-            }
-
-            @if (uploadComplete) {
-            <div class="processing-alert success">
-                <div class="alert-icon"><i class="bi bi-check-circle-all"></i></div>
-                <div class="alert-text">
-                    <strong>Upload Completed!</strong>
-                    <p>The video has been successfully linked to this lecture.</p>
-                </div>
-            </div>
-            }
-        </div>
-
-        <div class="modal-actions">
-            <button class="btn-cancel" (click)="closeVideoModal()" [disabled]="isUploadingVideo">
-                {{ uploadComplete ? 'Close' : 'Cancel' }}
-            </button>
-
-            @if (!uploadComplete) {
-            <button class="btn-confirm" (click)="uploadVideoToServer()"
-                [disabled]="!selectedVideoFile || isUploadingVideo">
-                <i class="bi bi-file-earmark-arrow-up"></i>
-                {{ isUploadingVideo ? 'Uploading...' : 'Upload Now' }}
-            </button>
-            }
-        </div>
+    <!-- Header -->
+    <div class="form-header">
+      <h3><i class="bi bi-camera-reels-fill"></i> Upload Lecture Video</h3>
+      <button class="btn-close-form" (click)="closeVideoModal()" [disabled]="isUploadingVideo">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
+
+    <div class="video-modal-body">
+      <div class="target-lecture-badge">
+        <i class="bi bi-journal-bookmark-fill"></i>
+        <span>Lecture: <strong>{{ selectedLectureForVideo.title }}</strong></span>
+      </div>
+
+      <!-- ── اختيار الملف ── -->
+      @if (!isUploadingVideo && !uploadComplete) {
+      <div class="upload-area">
+        <label class="upload-label">
+          <i class="bi bi-cloud-arrow-up-fill"></i>
+          <span>Select Video File</span>
+          <input type="file" accept="video/*" (change)="onVideoFileSelected($event)" hidden>
+        </label>
+
+        @if (selectedVideoFile) {
+        <div class="selected-file">
+          <i class="bi bi-play-circle-fill"></i>
+          <span>{{ selectedVideoFile.name }}</span>
+          <small>{{ (selectedVideoFile.size / 1024 / 1024).toFixed(2) }} MB</small>
+        </div>
+        }
+
+        @if (uploadError) {
+        <div class="error-message">
+          <i class="bi bi-exclamation-octagon-fill"></i> {{ uploadError }}
+        </div>
+        }
+      </div>
+      }
+
+      <!-- ── Progress Bar ── -->
+      @if (isUploadingVideo) {
+      <div class="upload-progress-wrapper">
+        <div class="progress-header">
+          <span class="progress-label">
+            <i class="bi bi-arrow-repeat spin"></i> Uploading…
+          </span>
+          <span class="progress-percent">{{ uploadProgress }}%</span>
+        </div>
+
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            [style.width.%]="uploadProgress"
+            [class.near-done]="uploadProgress >= 90">
+          </div>
+        </div>
+
+        <p class="progress-status">{{ uploadStatusText }}</p>
+      </div>
+      }
+
+      <!-- ── نجاح ── -->
+      @if (uploadComplete) {
+      <div class="processing-alert success">
+        <div class="alert-icon"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="alert-text">
+          <strong>Upload Completed!</strong>
+          <p>The video has been successfully linked to this lecture.</p>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeVideoModal()" [disabled]="isUploadingVideo">
+        {{ uploadComplete ? 'Close' : 'Cancel' }}
+      </button>
+
+      @if (!uploadComplete) {
+      <button class="btn-confirm"
+        (click)="uploadVideoToServer()"
+        [disabled]="!selectedVideoFile || isUploadingVideo">
+        <i class="bi bi-file-earmark-arrow-up"></i>
+        {{ isUploadingVideo ? 'Uploading ' + uploadProgress + '%…' : 'Upload Now' }}
+      </button>
+      }
+    </div>
+
+  </div>
 </div>
 }

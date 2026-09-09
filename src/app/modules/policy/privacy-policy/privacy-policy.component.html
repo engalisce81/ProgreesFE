@@ -1,0 +1,51 @@
+<div class="privacy-wrapper">
+  <div class="container">
+    <header class="privacy-header">
+      <h1>Privacy Policy</h1>
+      <p class="effective-date">The Progress — Effective Date: {{ effectiveDate }}</p>
+    
+    </header>
+
+    <div class="sections-list">
+      @for (item of privacySections; track item.id) {
+        <article class="privacy-card">
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.content }}</p>
+
+          @if (item.bullets) {
+            <ul class="bullet-list">
+              @for (bullet of item.bullets; track bullet) {
+                <li>{{ bullet }}</li>
+              }
+            </ul>
+          }
+
+          @if (item.contacts) {
+            <div class="contact-info-grid">
+              @for (contact of item.contacts; track contact.label) {
+                <div class="contact-card">
+                  <strong>{{ contact.label }}:</strong>
+                  @if (contact.link) {
+                    <a [href]="contact.link" target="_blank">{{ contact.value }}</a>
+                  } @else {
+                    <span>{{ contact.value }}</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (item.footer) {
+            <div class="section-note">
+              {{ item.footer }}
+            </div>
+          }
+        </article>
+      }
+    </div>
+
+    <footer class="final-footer">
+      <p>© 2026 The Progress Team. All rights reserved.</p>
+    </footer>
+  </div>
+</div>

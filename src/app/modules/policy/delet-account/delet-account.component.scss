@@ -1,0 +1,78 @@
+/* تنسيق عام للصفحة */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f0f2f5;
+    color: #000000; /* تم تغيير النص العام للأسود */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* تنسيق البطاقة الرئيسية */
+.container {
+    max-width: 500px;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: right;
+    border-top: 5px solid #d9534f;
+}
+
+/* تنسيق العنوان (يبقى أحمر لتمييزه) */
+h1 {
+    color: #d9534f;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* تنسيق القائمة */
+ol {
+    padding-right: 20px;
+    margin-bottom: 30px;
+}
+
+li {
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #333333; /* أسود داكن قليلاً لإراحة العين */
+}
+
+/* تنسيق صندوق الدعم */
+.support-box {
+    padding: 20px;
+    background: #f9f9f9; /* خلفية محايدة */
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.support-box p {
+    margin: 5px 0;
+    color: #000000; /* نص صندوق الدعم أسود */
+}
+
+/* تنسيق الرابط */
+a {
+    color: #d9534f; /* الرابط يبقى أحمر للفت الانتباه */
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 1px solid #d9534f;
+}
+
+a:hover {
+    color: #000000; /* يتحول للأسود عند المرور عليه */
+    border-bottom: 2px solid #000000;
+}
+
+/* استجابة الشاشات الصغيرة */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+        margin: 10px;
+    }
+}

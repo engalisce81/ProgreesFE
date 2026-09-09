@@ -1630,6 +1630,43 @@
             }
           ],
           "actions": {
+            "ReportMessageAsyncByInput": {
+              "uniqueName": "ReportMessageAsyncByInput",
+              "name": "ReportMessageAsync",
+              "httpMethod": "POST",
+              "url": "api/app/chat/report-message",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "Dev.Acadmy.Dtos.Request.Chats.ReportMessageDto, Dev.Acadmy.Application.Contracts",
+                  "type": "Dev.Acadmy.Dtos.Request.Chats.ReportMessageDto",
+                  "typeSimple": "Dev.Acadmy.Dtos.Request.Chats.ReportMessageDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "Dev.Acadmy.Dtos.Request.Chats.ReportMessageDto",
+                  "typeSimple": "Dev.Acadmy.Dtos.Request.Chats.ReportMessageDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "Dev.Acadmy.Response.ResponseApi<System.Boolean>",
+                "typeSimple": "Dev.Acadmy.Response.ResponseApi<boolean>"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Dev.Acadmy.Chats.ChatAppService"
+            },
             "SendMessageAsyncByInput": {
               "uniqueName": "SendMessageAsyncByInput",
               "name": "SendMessageAsync",
@@ -1954,6 +1991,233 @@
               },
               "allowAnonymous": false,
               "implementFrom": "Dev.Acadmy.Interfaces.IChatAppService"
+            }
+          }
+        },
+        "Dev.Acadmy.Chats.ChatReportAdminAppService": {
+          "controllerName": "ChatReportAdmin",
+          "controllerGroupName": "ChatReportAdmin",
+          "isRemoteService": true,
+          "isIntegrationService": false,
+          "apiVersion": null,
+          "type": "Dev.Acadmy.Chats.ChatReportAdminAppService",
+          "interfaces": [],
+          "actions": {
+            "GetListAsyncByInput": {
+              "uniqueName": "GetListAsyncByInput",
+              "name": "GetListAsync",
+              "httpMethod": "GET",
+              "url": "api/app/admin/chat-reports",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "Dev.Acadmy.Dtos.Request.Chats.GetReportsInputDto, Dev.Acadmy.Application.Contracts",
+                  "type": "Dev.Acadmy.Dtos.Request.Chats.GetReportsInputDto",
+                  "typeSimple": "Dev.Acadmy.Dtos.Request.Chats.GetReportsInputDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "Status",
+                  "jsonName": null,
+                  "type": "System.Int32?",
+                  "typeSimple": "number?",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "Filter",
+                  "jsonName": null,
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "Sorting",
+                  "jsonName": null,
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "SkipCount",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "MaxResultCount",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": "input"
+                }
+              ],
+              "returnValue": {
+                "type": "Volo.Abp.Application.Dtos.PagedResultDto<Dev.Acadmy.Dtos.Response.Chats.ChatMessageReportDto>",
+                "typeSimple": "Volo.Abp.Application.Dtos.PagedResultDto<Dev.Acadmy.Dtos.Response.Chats.ChatMessageReportDto>"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Dev.Acadmy.Chats.ChatReportAdminAppService"
+            },
+            "GetAsyncById": {
+              "uniqueName": "GetAsyncById",
+              "name": "GetAsync",
+              "httpMethod": "GET",
+              "url": "api/app/admin/chat-reports/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Guid, System.Private.CoreLib",
+                  "type": "System.Guid",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Guid",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "Dev.Acadmy.Response.ResponseApi<Dev.Acadmy.Dtos.Response.Chats.ChatMessageReportDto>",
+                "typeSimple": "Dev.Acadmy.Response.ResponseApi<Dev.Acadmy.Dtos.Response.Chats.ChatMessageReportDto>"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Dev.Acadmy.Chats.ChatReportAdminAppService"
+            },
+            "UpdateStatusAsyncByIdAndInput": {
+              "uniqueName": "UpdateStatusAsyncByIdAndInput",
+              "name": "UpdateStatusAsync",
+              "httpMethod": "PUT",
+              "url": "api/app/admin/chat-reports/{id}/status",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Guid, System.Private.CoreLib",
+                  "type": "System.Guid",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "input",
+                  "typeAsString": "Dev.Acadmy.Dtos.Request.Chats.UpdateReportStatusDto, Dev.Acadmy.Application.Contracts",
+                  "type": "Dev.Acadmy.Dtos.Request.Chats.UpdateReportStatusDto",
+                  "typeSimple": "Dev.Acadmy.Dtos.Request.Chats.UpdateReportStatusDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Guid",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "Dev.Acadmy.Dtos.Request.Chats.UpdateReportStatusDto",
+                  "typeSimple": "Dev.Acadmy.Dtos.Request.Chats.UpdateReportStatusDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "Dev.Acadmy.Response.ResponseApi<System.Boolean>",
+                "typeSimple": "Dev.Acadmy.Response.ResponseApi<boolean>"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Dev.Acadmy.Chats.ChatReportAdminAppService"
+            },
+            "DeleteReportedMessageAsyncByReportId": {
+              "uniqueName": "DeleteReportedMessageAsyncByReportId",
+              "name": "DeleteReportedMessageAsync",
+              "httpMethod": "DELETE",
+              "url": "api/app/admin/chat-reports/delete-reported-message/{reportId}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "reportId",
+                  "typeAsString": "System.Guid, System.Private.CoreLib",
+                  "type": "System.Guid",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "reportId",
+                  "name": "reportId",
+                  "jsonName": null,
+                  "type": "System.Guid",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "Dev.Acadmy.Response.ResponseApi<System.Boolean>",
+                "typeSimple": "Dev.Acadmy.Response.ResponseApi<boolean>"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Dev.Acadmy.Chats.ChatReportAdminAppService"
             }
           }
         },
@@ -6284,6 +6548,152 @@
               "returnValue": {
                 "type": "Dev.Acadmy.Response.ResponseApi<System.Boolean>",
                 "typeSimple": "Dev.Acadmy.Response.ResponseApi<boolean>"
+              },
+              "allowAnonymous": false,
+              "implementFrom": "Dev.Acadmy.MediaItems.MediaItemAppService"
+            },
+            "UploadChunkAsyncByInput": {
+              "uniqueName": "UploadChunkAsyncByInput",
+              "name": "UploadChunkAsync",
+              "httpMethod": "POST",
+              "url": "api/app/video/upload-chunk",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "Dev.Acadmy.MediaItems.UploadChunkDto, Dev.Acadmy.Application.Contracts",
+                  "type": "Dev.Acadmy.MediaItems.UploadChunkDto",
+                  "typeSimple": "Dev.Acadmy.MediaItems.UploadChunkDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "UploadId",
+                  "jsonName": null,
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Form",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "ChunkIndex",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Form",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "TotalChunks",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Form",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "ChunkData",
+                  "jsonName": null,
+                  "type": "Microsoft.AspNetCore.Http.IFormFile",
+                  "typeSimple": "Microsoft.AspNetCore.Http.IFormFile",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "FormFile",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "RefId",
+                  "jsonName": null,
+                  "type": "System.Guid?",
+                  "typeSimple": "string?",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Form",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "Type",
+                  "jsonName": null,
+                  "type": "System.Int32?",
+                  "typeSimple": "number?",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Form",
+                  "descriptorName": "input"
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "OriginalFileName",
+                  "jsonName": null,
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Form",
+                  "descriptorName": "input"
+                }
+              ],
+              "returnValue": {
+                "type": "Dev.Acadmy.Response.ResponseApi<System.String>",
+                "typeSimple": "Dev.Acadmy.Response.ResponseApi<string>"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "Dev.Acadmy.MediaItems.MediaItemAppService"
+            },
+            "CancelUploadByUploadId": {
+              "uniqueName": "CancelUploadByUploadId",
+              "name": "CancelUpload",
+              "httpMethod": "POST",
+              "url": "api/app/video/cancel-upload",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "uploadId",
+                  "typeAsString": "System.String, System.Private.CoreLib",
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "uploadId",
+                  "name": "uploadId",
+                  "jsonName": null,
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Query",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "Dev.Acadmy.Response.ResponseApi<System.String>",
+                "typeSimple": "Dev.Acadmy.Response.ResponseApi<string>"
               },
               "allowAnonymous": false,
               "implementFrom": "Dev.Acadmy.MediaItems.MediaItemAppService"
@@ -15350,7 +15760,7 @@
         {
           "name": "Rating",
           "jsonName": null,
-          "type": "System.Double",
+          "type": "System.Int32",
           "typeSimple": "number",
           "isRequired": false,
           "minLength": null,
@@ -16306,6 +16716,105 @@
         }
       ]
     },
+    "Dev.Acadmy.Dtos.Request.Chats.GetReportsInputDto": {
+      "baseType": "Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto",
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "Status",
+          "jsonName": null,
+          "type": "System.Int32?",
+          "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Filter",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "Dev.Acadmy.Dtos.Request.Chats.ReportMessageDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "MessageId",
+          "jsonName": null,
+          "type": "System.Guid",
+          "typeSimple": "string",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Reason",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": true,
+          "minLength": 0,
+          "maxLength": 200,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Details",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": 0,
+          "maxLength": 1000,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "Dev.Acadmy.Dtos.Request.Chats.UpdateReportStatusDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "Status",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
     "Dev.Acadmy.Dtos.Request.Courses.CreateUpdateCourseCertificateDto": {
       "baseType": null,
       "isEnum": false,
@@ -17161,6 +17670,135 @@
           "jsonName": null,
           "type": "System.Boolean",
           "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "Dev.Acadmy.Dtos.Response.Chats.ChatMessageReportDto": {
+      "baseType": "Volo.Abp.Application.Dtos.EntityDto<System.Guid>",
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "MessageId",
+          "jsonName": null,
+          "type": "System.Guid",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "MessageText",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "SenderId",
+          "jsonName": null,
+          "type": "System.Guid",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "SenderName",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ReporterId",
+          "jsonName": null,
+          "type": "System.Guid",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ReporterName",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Reason",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Details",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Status",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "CreationTime",
+          "jsonName": null,
+          "type": "System.DateTime",
+          "typeSimple": "string",
           "isRequired": false,
           "minLength": null,
           "maxLength": null,
@@ -20042,6 +20680,99 @@
         },
         {
           "name": "Name",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "Dev.Acadmy.MediaItems.UploadChunkDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "UploadId",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ChunkIndex",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "TotalChunks",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ChunkData",
+          "jsonName": null,
+          "type": "Microsoft.AspNetCore.Http.IFormFile",
+          "typeSimple": "Microsoft.AspNetCore.Http.IFormFile",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RefId",
+          "jsonName": null,
+          "type": "System.Guid?",
+          "typeSimple": "string?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Type",
+          "jsonName": null,
+          "type": "System.Int32?",
+          "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "OriginalFileName",
           "jsonName": null,
           "type": "System.String",
           "typeSimple": "string",

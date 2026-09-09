@@ -72,6 +72,14 @@ function configureRoutes(routesService: RoutesService) {
       order: 13,
       layout: eLayoutType.application,
     },
+
+     {
+      path: 'report-messages',
+      name: 'Report Messages',
+      iconClass: 'fas fa-user-circle',
+      order: 14,
+      layout: eLayoutType.application,
+    },
     ]);
   };
 }

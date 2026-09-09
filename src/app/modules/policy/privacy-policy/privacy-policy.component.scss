@@ -1,0 +1,131 @@
+.privacy-wrapper {
+  background: var(--bg-body);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 80px 24px;
+
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+  }
+}
+
+.privacy-header {
+  text-align: center;
+  margin-bottom: 60px;
+
+  h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: var(--an-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .effective-date {
+    color: var(--muted);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+
+  .intro-box {
+    background: var(--surface);
+    padding: 30px;
+    border-radius: var(--radius);
+    line-height: 1.8;
+    color: var(--text);
+    border: 1px solid var(--surface-variant);
+    box-shadow: var(--shadow-2);
+  }
+}
+
+.privacy-card {
+  background: var(--card);
+  padding: 35px;
+  border-radius: var(--radius);
+  margin-bottom: 30px;
+  border-right: 4px solid var(--bell-300);
+  box-shadow: var(--shadow-1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateX(-5px);
+    border-right-color: var(--blue-500);
+  }
+
+  h2 {
+    color: var(--sky-300);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+
+  p {
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 15px;
+    font-size: 1.05rem;
+  }
+
+  .bullet-list {
+    margin: 15px 0;
+    padding-right: 25px;
+    li {
+      color: var(--muted);
+      margin-bottom: 12px;
+      list-style-type: square;
+      &::marker {
+        color: var(--purple-600);
+      }
+    }
+  }
+
+  .section-note {
+    background: var(--surface-variant);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    font-size: 0.95rem;
+    border: 1px dashed var(--bell-300);
+    color: var(--text);
+    line-height: 1.6;
+  }
+}
+
+.contact-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 25px;
+
+  .contact-card {
+    background: var(--surface);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--surface-variant);
+    
+    strong { color: var(--sky-300); display: block; margin-bottom: 4px; }
+    
+    a {
+      color: var(--blue-500);
+      text-decoration: none;
+      word-break: break-all;
+      &:hover { text-decoration: underline; }
+    }
+  }
+}
+
+.final-footer {
+  text-align: center;
+  margin-top: 80px;
+  padding-top: 40px;
+  border-top: 1px solid var(--surface-variant);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .privacy-header h1 { font-size: 2.5rem; }
+  .privacy-card { padding: 25px; }
+}

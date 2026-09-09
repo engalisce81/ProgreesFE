@@ -130,7 +130,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "14kb",
-                  "maximumError": "18kb"
+                  "maximumError": "18.5kb"
                 }
               ],
               "fileReplacements": [

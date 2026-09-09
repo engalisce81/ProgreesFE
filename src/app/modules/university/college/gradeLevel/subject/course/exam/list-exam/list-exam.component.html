@@ -1,226 +1,786 @@
 <div class="list-container">
-  <!-- تبويبات التنقل -->
+
+  <!-- ========================= -->
+  <!-- Tabs Header -->
+  <!-- ========================= -->
   <div class="tabs-header">
+
     <div class="tabs">
-      <button class="tab-btn" [class.active]="activeTab === 'exams'" (click)="switchTab('exams')">
-        <i class="bi bi-journal-text"></i> Exams
+
+      <!-- Exams Tab -->
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'exams'"
+        (click)="switchTab('exams')">
+
+        <i class="bi bi-journal-text"></i>
+        Exams
       </button>
-      <button class="tab-btn" [class.active]="activeTab === 'questions'" [disabled]="!selectedExamForQuestions">
-        <i class="bi bi-patch-question"></i> Manage Questions
-        @if(selectedExamForQuestions) {
-        <span class="exam-badge">{{selectedExamForQuestions.name}}</span>
+
+      <!-- Manage Questions Tab -->
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'questions'"
+        [disabled]="!selectedExamForQuestions"
+        (click)="switchTab('questions')">
+
+        <i class="bi bi-patch-question"></i>
+        Manage Questions
+
+        @if (selectedExamForQuestions) {
+          <span class="exam-badge">
+            {{ selectedExamForQuestions.name }}
+          </span>
         }
+
       </button>
+
     </div>
 
-    @if(activeTab === 'exams') {
-    <div class="toolbar">
-      <div class="search-wrapper">
-        <i class="bi bi-search search-icon"></i>
-        <input type="text" [(ngModel)]="search" (keyup.enter)="loadExams()" placeholder="Search exams..."
-          class="search-input-modern">
-      </div>
-      <button class="btn-create-modern" (click)="openCreateForm()">
-        <i class="bi bi-plus-lg"></i> New Exam
-      </button>
-    </div>
-    }
-  </div>
 
-  <!-- محتوى التبويب: الامتحانات -->
-  @if(activeTab === 'exams') {
-  @if(loading && !showDeleteConfirm) {
-  <div class="loading-overlay">
-    <div class="spinner-modern"></div>
-  </div>
-  } @else {
-  <div class="cards-grid">
-    @for(exam of exams; track exam.id) {
-    <div class="exam-card">
-      <div class="card-status" [class.active]="exam.isActive">
-        <span class="dot"></span> {{ exam.isActive ? 'Active' : 'Hidden' }}
-      </div>
+    <!-- ========================= -->
+    <!-- Toolbar -->
+    <!-- ========================= -->
+    @if (activeTab === 'exams') {
 
-      <div class="card-content">
-        <h3 class="exam-title">{{ exam.name }}</h3>
-        <div class="exam-info">
-          <span><i class="bi bi-stopwatch"></i> {{ exam.timeExam }}m</span>
-          <span><i class="bi bi-star"></i> {{ exam.score }} pts</span>
-          <span><i class="bi bi-star"></i> {{ exam.passScore }} %</span>
+      <div class="toolbar">
+
+        <!-- Search -->
+        <div class="search-wrapper">
+
+          <i class="bi bi-search search-icon"></i>
+
+          <input
+            type="text"
+            [(ngModel)]="search"
+            (keyup.enter)="loadExams()"
+            placeholder="Search exams..."
+            class="search-input-modern"
+          />
+
         </div>
-      </div>
 
-      <div class="card-actions">
-        <button [routerLink]="[exam.id,'questions']" class="act-btn questions" title="View Questions">
-          <i class="bi bi-eye"></i> </button>
-          <button [routerLink]="[exam.id,'students']" class="act-btn questions" title="View Students">
-          <i class="bi-mortarboard"></i> </button>
 
-        <button (click)="switchTab('questions', exam)" class="act-btn questions" title="Manage Bank">
-          <i class="bi bi-question-circle"></i> </button>
+        <!-- New Exam -->
+        <!-- IMPORTANT:
+             Removed *ngIf="exams.length === 0"
+             so you can create multiple exams -->
+        <button
+          class="btn-create-modern"
+          type="button"
+          (click)="openCreateForm()">
 
-        <button (click)="openEditForm(exam)" class="act-btn edit" title="Edit Exam">
-          <i class="bi bi-pencil-square"></i> </button>
+          <i class="bi bi-plus-lg"></i>
+          New Exam
 
-        <button (click)="confirmDelete(exam)" class="act-btn delete" title="Delete Exam">
-          <i class="bi bi-trash3-fill"></i> </button>
-      </div>
-    </div>
-    }
-  </div>
-
-  @if(exams.length === 0) {
-  <div class="empty-state">
-    <i class="bi bi-journal-x"></i>
-    <p>No exams linked to this course yet.</p>
-  </div>
-  }
-  }
-  }
-
-  <!-- محتوى التبويب: إدارة الأسئلة -->
-  @if(activeTab === 'questions') {
-  <div class="questions-management-container">
-    <div class="questions-header">
-      <button class="btn-back" (click)="switchTab('exams')">
-        <i class="bi bi-arrow-left"></i> Back to Exams
-      </button>
-      <h3 class="exam-title">Manage Questions for: {{selectedExamForQuestions?.name}}</h3>
-    </div>
-
-    <!-- Select Banks -->
-    <div class="form-section">
-      <h4>Select Question Banks</h4>
-      <div class="bank-selection">
-        @for (bank of banks; track $index) {
-        <div class="bank-checkbox">
-          <input type="checkbox" [id]="bank.id" [value]="bank.id" (change)="onBankChecked($event, bank.id!)"
-            [checked]="selectedBankIds.includes(bank.id!)" />
-          <label [for]="bank.id">
-            {{ bank.name }}
-          </label>
-        </div>
-        }
-      </div>
-
-      <button class="btn-load-questions" (click)="loadQuestionsForExam()" [disabled]="selectedBankIds.length === 0">
-        <i class="bi bi-arrow-down-circle"></i> Load Questions
-      </button>
-    </div>
-
-    <!-- Questions List -->
-    @if(questions.length > 0) {
-    <div class="questions-list-container">
-      <div class="questions-header">
-        <h4>Loaded Questions ({{questions.length}})</h4>
-        <button class="btn-add-selected" [disabled]=" loadingQuestions" (click)="addSelectedQuestions()">
-          @if(loadingQuestions) {
-          <span class="spinner-mini"></span> Adding...
-          } @else {
-          <i class="bi bi-plus-circle"></i> Add Selected Questions
-          }
         </button>
+
       </div>
 
-      <div class="questions-grid">
-        @for (question of questions; track $index) {
-        <div class="question-card" [class.selected]="question.isSelected">
-          <div class="question-header">
-            <input type="checkbox" [(ngModel)]="question.isSelected" />
-            <span class="question-type">{{question.questionType}}</span>
-          </div>
-          <div class="question-body">
-              @if(question.logoUrl) {
-              <div class="question-image-wrapper">
-                <img [src]="question.logoUrl" alt="Question Image" class="question-img-preview">
-              </div>
-              }
-              <h5>{{question.tittle}}</h5>
-              @if(question.questionAnswers && question.questionAnswers.length > 0) {
-              <ul class="answers-list">
-                @for (ans of question.questionAnswers; track $index) {
-                <li [class.correct]="ans.isSelected">{{ans.answer}}</li>
-                }
-              </ul>
-              }
-            </div>
-          </div>
-          }
-        </div>
-      </div>
-      }
-
-      @if(loadingQuestions) {
-      <div class="loading-overlay">
-        <div class="spinner-modern"></div>
-      </div>
-      }
-    </div>
     }
 
-    <!-- مودال إنشاء/تعديل الامتحان -->
-    @if(showForm) {
-    <div class="modal-overlay">
-      <div class="modal-content-card">
-        <div class="form-header">
-          <h3>
-            <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-journal-plus'"></i>
-            {{ isEditMode ? 'Update Exam' : 'Create New Exam' }}
-          </h3>
-          <button class="btn-close-form" (click)="closeForm()"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+
+  <!-- ====================================================== -->
+  <!-- Exams Tab -->
+  <!-- ====================================================== -->
+
+  @if (activeTab === 'exams') {
+
+    <!-- Loading -->
+    @if (loading && !showDeleteConfirm) {
+
+      <div class="loading-overlay">
+
+        <div class="spinner-modern"></div>
+
+      </div>
+
+    }
+
+    @else {
+
+      <!-- ========================= -->
+      <!-- Exams Cards -->
+      <!-- ========================= -->
+
+      <div class="cards-grid">
+
+        @for (exam of exams; track exam.id) {
+
+          <div class="exam-card">
+
+            <!-- Status -->
+            <div
+              class="card-status"
+              [class.active]="exam.isActive">
+
+              <span class="dot"></span>
+
+              {{ exam.isActive ? 'Active' : 'Hidden' }}
+
+            </div>
+
+
+            <!-- Card Content -->
+            <div class="card-content">
+
+              <h3 class="exam-title">
+                {{ exam.name }}
+              </h3>
+
+
+              <div class="exam-info">
+
+                <!-- Duration -->
+                <span>
+                  <i class="bi bi-stopwatch"></i>
+                  {{ exam.timeExam }}m
+                </span>
+
+
+                <!-- Score -->
+                <span>
+                  <i class="bi bi-star"></i>
+                  {{ exam.score }} pts
+                </span>
+
+
+                <!-- Pass Score -->
+                <span>
+                  <i class="bi bi-percent"></i>
+                  {{ exam.passScore }}%
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- Card Actions -->
+            <!-- ========================= -->
+
+            <div class="card-actions">
+
+              <!-- View Questions -->
+              <button
+                [routerLink]="[exam.id, 'questions']"
+                class="act-btn questions"
+                title="View Questions">
+
+                <i class="bi bi-eye"></i>
+
+              </button>
+
+
+              <!-- View Students -->
+              <button
+                [routerLink]="[exam.id, 'students']"
+                class="act-btn questions"
+                title="View Students">
+
+                <i class="bi bi-mortarboard"></i>
+
+              </button>
+
+
+              <!-- Manage Questions -->
+              <button
+                type="button"
+                (click)="switchTab('questions', exam)"
+                class="act-btn questions"
+                title="Manage Questions">
+
+                <i class="bi bi-question-circle"></i>
+
+              </button>
+
+
+              <!-- Edit -->
+              <button
+                type="button"
+                (click)="openEditForm(exam)"
+                class="act-btn edit"
+                title="Edit Exam">
+
+                <i class="bi bi-pencil-square"></i>
+
+              </button>
+
+
+              <!-- Delete -->
+              <button
+                type="button"
+                (click)="confirmDelete(exam)"
+                class="act-btn delete"
+                title="Delete Exam">
+
+                <i class="bi bi-trash3-fill"></i>
+
+              </button>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- ========================= -->
+      <!-- Empty State -->
+      <!-- ========================= -->
+
+      @if (exams.length === 0) {
+
+        <div class="empty-state">
+
+          <i class="bi bi-journal-x"></i>
+
+          <p>
+            No exams linked to this course yet.
+          </p>
+
+          <!-- Create first exam -->
+          <button
+            type="button"
+            class="btn-create-modern"
+            (click)="openCreateForm()">
+
+            <i class="bi bi-plus-lg"></i>
+            Create First Exam
+
+          </button>
+
         </div>
 
-        <form [formGroup]="examForm" (ngSubmit)="submit()" class="modern-vertical-form">
+      }
+
+    }
+
+  }
+
+
+  <!-- ====================================================== -->
+  <!-- Manage Questions Tab -->
+  <!-- ====================================================== -->
+
+  @if (activeTab === 'questions') {
+
+    <div class="questions-management-container">
+
+
+      <!-- ========================= -->
+      <!-- Questions Header -->
+      <!-- ========================= -->
+
+      <div class="questions-header">
+
+        <button
+          type="button"
+          class="btn-back"
+          (click)="switchTab('exams')">
+
+          <i class="bi bi-arrow-left"></i>
+          Back to Exams
+
+        </button>
+
+
+        <h3 class="exam-title">
+
+          Manage Questions for:
+          {{ selectedExamForQuestions?.name }}
+
+        </h3>
+
+      </div>
+
+
+      <!-- ========================= -->
+      <!-- Select Question Banks -->
+      <!-- ========================= -->
+
+      <div class="form-section">
+
+        <h4>
+          Select Question Banks
+        </h4>
+
+
+        <div class="bank-selection">
+
+          @for (bank of banks; track $index) {
+
+            <div class="bank-checkbox">
+
+              <input
+                type="checkbox"
+                [id]="bank.id"
+                [value]="bank.id"
+                (change)="onBankChecked($event, bank.id!)"
+                [checked]="selectedBankIds.includes(bank.id!)"
+              />
+
+              <label [for]="bank.id">
+
+                {{ bank.name }}
+
+              </label>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        <!-- Load Questions -->
+        <button
+          type="button"
+          class="btn-load-questions"
+          (click)="loadQuestionsForExam()"
+          [disabled]="selectedBankIds.length === 0">
+
+          <i class="bi bi-arrow-down-circle"></i>
+
+          Load Questions
+
+        </button>
+
+      </div>
+
+
+      <!-- ========================= -->
+      <!-- Questions List -->
+      <!-- ========================= -->
+
+      @if (questions.length > 0) {
+
+        <div class="questions-list-container">
+
+
+          <!-- Questions Header -->
+          <div class="questions-header">
+
+            <h4>
+              Loaded Questions
+              ({{ questions.length }})
+            </h4>
+
+
+            <!-- Add Selected -->
+            <button
+              type="button"
+              class="btn-add-selected"
+              [disabled]="!hasSelectedQuestions || loadingQuestions"
+              (click)="addSelectedQuestions()">
+
+              @if (loadingQuestions) {
+
+                <span class="spinner-mini"></span>
+
+                Adding...
+
+              }
+
+              @else {
+
+                <i class="bi bi-plus-circle"></i>
+
+                Add Selected Questions
+
+              }
+
+            </button>
+
+          </div>
+
+
+          <!-- ========================= -->
+          <!-- Questions Grid -->
+          <!-- ========================= -->
+
+          <div class="questions-grid">
+
+            @for (question of questions; track $index) {
+
+              <div
+                class="question-card"
+                [class.selected]="question.isSelected">
+
+
+                <!-- Question Header -->
+                <div class="question-header">
+
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="question.isSelected"
+                  />
+
+
+                  <span class="question-type">
+
+                    {{ question.questionType }}
+
+                  </span>
+
+                </div>
+
+
+                <!-- Question Body -->
+                <div class="question-body">
+
+
+                  <!-- Question Image -->
+                  @if (question.logoUrl) {
+
+                    <div class="question-image-wrapper">
+
+                      <img
+                        [src]="question.logoUrl"
+                        alt="Question Image"
+                        class="question-img-preview"
+                      />
+
+                    </div>
+
+                  }
+
+
+                  <!-- Question Title -->
+                  <h5>
+
+                    {{ question.tittle }}
+
+                  </h5>
+
+
+                  <!-- Answers -->
+                  @if (
+                    question.questionAnswers &&
+                    question.questionAnswers.length > 0
+                  ) {
+
+                    <ul class="answers-list">
+
+                      @for (
+                        ans of question.questionAnswers;
+                        track $index
+                      ) {
+
+                        <li
+                          [class.correct]="ans.isSelected">
+
+                          {{ ans.answer }}
+
+                        </li>
+
+                      }
+
+                    </ul>
+
+                  }
+
+                </div>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+      }
+
+
+      <!-- ========================= -->
+      <!-- Questions Loading -->
+      <!-- ========================= -->
+
+      @if (loadingQuestions) {
+
+        <div class="loading-overlay">
+
+          <div class="spinner-modern"></div>
+
+        </div>
+
+      }
+
+    </div>
+
+  }
+
+
+  <!-- ====================================================== -->
+  <!-- Create / Edit Exam Modal -->
+  <!-- ====================================================== -->
+
+  @if (showForm) {
+
+    <div class="modal-overlay">
+
+      <div class="modal-content-card">
+
+
+        <!-- Modal Header -->
+        <div class="form-header">
+
+          <h3>
+
+            <i
+              class="bi"
+              [ngClass]="
+                isEditMode
+                  ? 'bi-pencil-square'
+                  : 'bi-journal-plus'
+              ">
+            </i>
+
+            {{ isEditMode ? 'Update Exam' : 'Create New Exam' }}
+
+          </h3>
+
+
+          <!-- Close -->
+          <button
+            type="button"
+            class="btn-close-form"
+            (click)="closeForm()">
+
+            <i class="bi bi-x-lg"></i>
+
+          </button>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- Exam Form -->
+        <!-- ========================= -->
+
+        <form
+          [formGroup]="examForm"
+          (ngSubmit)="submit()"
+          class="modern-vertical-form">
+
+
+          <!-- Exam Name -->
           <div class="form-group">
-            <label>Exam Name *</label>
-            <input type="text" formControlName="name" class="form-control" placeholder="e.g. Monthly Assessment">
-          </div>
 
-          <div class="form-row-dual">
-            <div class="form-group">
-              <label>Duration (Minutes)</label>
-              <input type="number" formControlName="timeExam" class="form-control">
-            </div>
-           
-          </div>
-
-          <div class="form-row-dual">
-            <div class="form-group">
-              <label>Passing Score</label>
-              <input type="number" formControlName="passScore" class="form-control">
-            </div>
-          </div>
-
-          <div class="form-group checkbox-align">
-            <label class="switch-label">
-              <input type="checkbox" formControlName="isActive">
-              <span>Show to Students (Active)</span>
+            <label>
+              Exam Name *
             </label>
+
+            <input
+              type="text"
+              formControlName="name"
+              class="form-control"
+              placeholder="e.g. Monthly Assessment"
+            />
+
+            @if (
+              examForm.get('name')?.touched &&
+              examForm.get('name')?.invalid
+            ) {
+
+              <small class="text-danger">
+                Exam name is required.
+              </small>
+
+            }
+
           </div>
+
+
+          <!-- Duration -->
+          <div class="form-group">
+
+            <label>
+              Duration (Minutes)
+            </label>
+
+            <input
+              type="number"
+              formControlName="timeExam"
+              class="form-control"
+              min="1"
+            />
+
+            @if (
+              examForm.get('timeExam')?.touched &&
+              examForm.get('timeExam')?.invalid
+            ) {
+
+              <small class="text-danger">
+                Duration must be at least 1 minute.
+              </small>
+
+            }
+
+          </div>
+
+
+          <!-- Passing Score -->
+          <div class="form-group">
+
+            <label>
+              Passing Score (%)
+            </label>
+
+            <input
+              type="number"
+              formControlName="passScore"
+              class="form-control"
+              min="0"
+              max="100"
+            />
+
+          </div>
+
+
+          <!-- Active -->
+          <div class="form-group checkbox-align">
+
+            <label class="switch-label">
+
+              <input
+                type="checkbox"
+                formControlName="isActive"
+              />
+
+              <span>
+                Show to Students (Active)
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <!-- ========================= -->
+          <!-- Form Actions -->
+          <!-- ========================= -->
 
           <div class="form-actions">
-            <button type="button" class="btn-cancel" (click)="closeForm()">Cancel</button>
-            <button type="submit" class="btn-confirm" [disabled]="examForm.invalid || submitting">
-              {{ submitting ? 'Processing...' : 'Save Settings' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-    }
 
-    <!-- مودال تأكيد الحذف -->
-    @if(showDeleteConfirm) {
-    <div class="modal-overlay">
-      <div class="delete-modal">
-        <div class="warning-ring"><i class="bi bi-exclamation-triangle"></i></div>
-        <h3>Confirm Deletion</h3>
-        <p>Are you sure you want to delete <strong>{{ examToDelete?.name }}</strong>?</p>
-        <div class="modal-btns">
-          <button class="btn-no" (click)="cancelDelete()">Back</button>
-          <button class="btn-yes" (click)="deleteExam()">Delete Forever</button>
-        </div>
+            <!-- Cancel -->
+            <button
+              type="button"
+              class="btn-cancel"
+              (click)="closeForm()">
+
+              Cancel
+
+            </button>
+
+
+            <!-- Save -->
+            <button
+              type="submit"
+              class="btn-confirm"
+              [disabled]="examForm.invalid || submitting">
+
+              @if (submitting) {
+
+                Processing...
+
+              }
+
+              @else {
+
+                {{ isEditMode ? 'Update Exam' : 'Create Exam' }}
+
+              }
+
+            </button>
+
+          </div>
+
+        </form>
+
       </div>
+
     </div>
-    }
-  </div>
+
+  }
+
+
+  <!-- ====================================================== -->
+  <!-- Delete Confirmation Modal -->
+  <!-- ====================================================== -->
+
+  @if (showDeleteConfirm) {
+
+    <div class="modal-overlay">
+
+      <div class="delete-modal">
+
+
+        <!-- Warning Icon -->
+        <div class="warning-ring">
+
+          <i class="bi bi-exclamation-triangle"></i>
+
+        </div>
+
+
+        <!-- Title -->
+        <h3>
+          Confirm Deletion
+        </h3>
+
+
+        <!-- Message -->
+        <p>
+
+          Are you sure you want to delete
+
+          <strong>
+            {{ examToDelete?.name }}
+          </strong>
+
+          ?
+
+        </p>
+
+
+        <!-- Buttons -->
+        <div class="modal-btns">
+
+
+          <!-- Cancel -->
+          <button
+            type="button"
+            class="btn-no"
+            (click)="cancelDelete()">
+
+            Back
+
+          </button>
+
+
+          <!-- Delete -->
+          <button
+            type="button"
+            class="btn-yes"
+            (click)="deleteExam()">
+
+            Delete Forever
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

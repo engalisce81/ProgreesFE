@@ -1,7 +1,7 @@
 import { RestService, Rest } from '@abp/ng.core';
 import type { PagedResultDto } from '@abp/ng.core';
 import { Injectable } from '@angular/core';
-import type { CreateUpdateChatMessageDto } from '../dtos/request/chats/models';
+import type { CreateUpdateChatMessageDto, ReportMessageDto } from '../dtos/request/chats/models';
 import type { ChatContactDto, ChatMessageDto } from '../dtos/response/chats/models';
 import type { ResponseApi } from '../response/models';
 
@@ -43,6 +43,15 @@ export class ChatService {
       method: 'GET',
       url: '/api/app/chat/contacts',
       params: { search, pageNumber, pageSize },
+    },
+    { apiName: this.apiName,...config });
+  
+
+  reportMessage = (input: ReportMessageDto, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, ResponseApi<boolean>>({
+      method: 'POST',
+      url: '/api/app/chat/report-message',
+      body: input,
     },
     { apiName: this.apiName,...config });
   

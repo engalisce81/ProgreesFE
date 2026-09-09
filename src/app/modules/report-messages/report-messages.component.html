@@ -1,0 +1,221 @@
+<!-- report-messages.component.html -->
+<div class="list-container">
+  @if (showDetailsModal && selectedReport) {
+  <div class="modal-overlay" (click)="closeDetailsModal()">
+    <div class="form-card details-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Report Details</h3>
+        <button class="close-btn" (click)="closeDetailsModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="details-content">
+        <div class="details-section">
+          <h4>Report Information</h4>
+          <div class="detail-row">
+            <span class="detail-label">Report ID:</span>
+            <span class="detail-value">{{ selectedReport.id }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span class="status-badge" [class]="getStatusClass(selectedReport.status)">
+              {{ getStatusLabel(selectedReport.status) }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Created At:</span>
+            <span class="detail-value">{{ formatDate(selectedReport.creationTime) }}</span>
+          </div>
+        </div>
+
+        <div class="details-section">
+          <h4>Message Information</h4>
+          <div class="detail-row">
+            <span class="detail-label">Sender:</span>
+            <span class="detail-value">{{ selectedReport.senderName || 'Unknown' }}</span>
+          </div>
+          <div class="message-content">
+            <label>Message Content:</label>
+            <p>{{ selectedReport.messageText || 'No message text available' }}</p>
+          </div>
+        </div>
+
+        <div class="details-section">
+          <h4>Reporter Information</h4>
+          <div class="detail-row">
+            <span class="detail-label">Reporter:</span>
+            <span class="detail-value">{{ selectedReport.reporterName || 'Unknown' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Reason:</span>
+            <span class="detail-value">{{ selectedReport.reason || 'Not specified' }}</span>
+          </div>
+          @if (selectedReport.details) {
+          <div class="detail-row">
+            <span class="detail-label">Details:</span>
+            <span class="detail-value">{{ selectedReport.details }}</span>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeDetailsModal()">Close</button>
+        <button class="btn-confirm" (click)="closeDetailsModal(); openStatusModal(selectedReport)">
+          <i class="bi bi-pencil"></i> Update Status
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  @if (showStatusModal && selectedReport) {
+  <div class="modal-overlay" (click)="closeStatusModal()">
+    <div class="form-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Update Report Status</h3>
+        <button class="close-btn" (click)="closeStatusModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="statusForm" (ngSubmit)="submitStatusUpdate()">
+        <div class="form-group">
+          <label>Status *</label>
+          <select formControlName="status" class="form-control">
+            <option value="" disabled>-- Select Status --</option>
+            @for (option of statusOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeStatusModal()">Cancel</button>
+          <button type="submit" class="btn-confirm" [disabled]="statusForm.invalid || loading">
+            @if (loading) { <span class="loader-inner"></span> }
+            @else { Update Status }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  @if (showDeleteModal && reportToDelete) {
+  <div class="modal-overlay" (click)="closeDeleteModal()">
+    <div class="form-card delete-card" (click)="$event.stopPropagation()">
+      <div class="delete-icon">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <h3>Delete Reported Message</h3>
+      <p>Are you sure you want to delete the reported message? This action cannot be undone.</p>
+      
+      <div class="delete-message-preview">
+        <p><strong>Message:</strong> {{ reportToDelete.messageText || 'No content' }}</p>
+        <p><strong>Sender:</strong> {{ reportToDelete.senderName || 'Unknown' }}</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeDeleteModal()">Cancel</button>
+        <button class="btn-delete" (click)="confirmDeleteReport()" [disabled]="loading">
+          @if (loading) { <span class="loader-inner"></span> }
+          @else { <i class="bi bi-trash"></i> Delete Message }
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" [(ngModel)]="search" (input)="onSearchChange()" 
+        placeholder="Search by message, sender, or reporter..." class="search-input-modern" />
+    </div>
+    
+    <div class="toolbar-actions">
+      <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()" class="filter-select">
+        <option value="">All Statuses</option>
+        @for (option of statusOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="reports-list" [class.content-loading]="loading && reports.length === 0">
+    @for (report of reports; track report.id) {
+    <div class="report-card">
+      <div class="report-header">
+        <div class="report-icon">
+          <i class="bi bi-chat-quote"></i>
+        </div>
+        <div class="report-info">
+          <div class="report-title">
+            <span class="status-badge" [class]="getStatusClass(report.status)">
+              {{ getStatusLabel(report.status) }}
+            </span>
+            <span class="report-date">{{ formatDate(report.creationTime) }}</span>
+          </div>
+          <p class="message-preview">{{ report.messageText || 'No message content' }}</p>
+        </div>
+        <div class="dropdown-actions">
+          <button class="dots-btn" (click)="$event.stopPropagation(); toggleMenu(report)">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          @if (report.showMenu) {
+          <div class="actions-menu" (mouseleave)="report.showMenu = false">
+            <button (click)="openDetailsModal(report)">
+              <i class="bi bi-eye"></i> View Details
+            </button>
+            <button (click)="openStatusModal(report)">
+              <i class="bi bi-pencil"></i> Update Status
+            </button>
+            <button class="text-danger" (click)="openDeleteModal(report)">
+              <i class="bi bi-trash"></i> Delete Message
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+      
+      <div class="report-footer">
+        <div class="reporter-info">
+          <span class="label">Reporter:</span>
+          <span class="value">{{ report.reporterName || 'Unknown' }}</span>
+        </div>
+        <div class="sender-info">
+          <span class="label">Sender:</span>
+          <span class="value">{{ report.senderName || 'Unknown' }}</span>
+        </div>
+      </div>
+    </div>
+    }
+    
+    @if (!loading && reports.length === 0) {
+    <div class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <h3>No Reports Found</h3>
+      <p>There are no reports matching your criteria.</p>
+    </div>
+    }
+  </div>
+
+  @if (totalCount > pageSize) {
+  <div class="pagination-modern">
+    <button class="page-nav" [disabled]="pageIndex === 1" (click)="onPageChange(pageIndex - 1)">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    @for (p of [].constructor(totalPages); track $index) {
+    <button class="page-num" [class.active]="pageIndex === ($index + 1)" (click)="onPageChange($index + 1)">
+      {{ $index + 1 }}
+    </button>
+    }
+    <button class="page-nav" [disabled]="pageIndex === totalPages" (click)="onPageChange(pageIndex + 1)">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+  }
+</div>
