@@ -22,7 +22,7 @@ export class ListStudentComponent implements OnInit {
   students: any[] = [];
   loading = false;
   search = '';
-  
+
   // Pagination
   totalCount = 0;
   pageSize = 10;
@@ -72,7 +72,7 @@ studentToDelete:StudentDto;
       accountTypeKey: [3],
       studentMobileIP: [''],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]]
-     
+
     });
   }
 
@@ -131,19 +131,19 @@ studentToDelete:StudentDto;
   this.isEditMode = true;
   this.selectedStudentId = student.id;
   this.studentForm.get('password')?.clearValidators();
-  
+
   // 1. تحميل الكليات أولاً
   this.collegeService.getCollegesList(student.universityId).subscribe(cRes => {
     this.colleges = cRes.items;
-    
+
     // 2. تحميل المستويات الدراسية ثانياً
     this.collegeService.getGradeLevelList(student.collegeId).subscribe(gRes => {
       this.gradeLevels = gRes.items;
 
-      // 3. تعطيل الـ Listeners مؤقتاً أو استخدام { emitEvent: false } 
+      // 3. تعطيل الـ Listeners مؤقتاً أو استخدام { emitEvent: false }
       // لمنع الـ Listener في setupFormListeners من مسح الداتا
       this.studentForm.patchValue(student, { emitEvent: false });
-      
+
       this.showFormModal = true;
     });
   });
@@ -155,8 +155,13 @@ studentToDelete:StudentDto;
     if (this.studentForm.invalid) return;
     this.loading = true;
     const dto = this.studentForm.value;
+
+    // Convert empty Student Mobile IP to null
+    dto.studentMobileIP =
+    dto.studentMobileIP?.trim() || null;
+
     if(this.isEditMode) dto.password ="123456";
-    const request = this.isEditMode 
+    const request = this.isEditMode
       ? this.studentService.update(this.selectedStudentId!, dto)
       : this.studentService.create(dto);
 
@@ -209,15 +214,15 @@ studentToDelete:StudentDto;
 
 
 
-  confirmDelete(student: any) { 
-  this.studentToDelete = student; 
-  this.showDeleteConfirm = true; 
+  confirmDelete(student: any) {
+  this.studentToDelete = student;
+  this.showDeleteConfirm = true;
 }
 
 // 2. إلغاء العملية وإغلاق المودال
-cancelDelete() { 
+cancelDelete() {
   this.studentToDelete = null;
-  this.showDeleteConfirm = false; 
+  this.showDeleteConfirm = false;
 }
 
 // 3. تنفيذ عملية الحذف الفعلية
@@ -227,7 +232,7 @@ deleteStudent() {
       next: () => {
         // إغلاق المودال وتحديث القائمة بعد النجاح
         this.showDeleteConfirm = false;
-        this.loadStudents(); 
+        this.loadStudents();
         // يمكنك إضافة رسالة نجاح هنا (Toaster)
       },
       error: (err) => {
